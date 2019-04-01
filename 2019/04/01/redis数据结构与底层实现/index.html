@@ -88,7 +88,8 @@
 <meta property="og:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  2. String对象使用场景与底层实现1.使用场景简单的key-value类型，value不仅可以是字符串还可以是数字。  原子计数器 支持append 支持O(1)时间获取字符串长度 支持获取子串">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/String-raw.png">
-<meta property="og:updated_time" content="2019-04-01T07:14:17.053Z">
+<meta property="og:image" content="http://yoursite.com/uploads/String-embstr.png">
+<meta property="og:updated_time" content="2019-04-01T07:34:42.737Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis数据结构与底层实现">
 <meta name="twitter:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  2. String对象使用场景与底层实现1.使用场景简单的key-value类型，value不仅可以是字符串还可以是数字。  原子计数器 支持append 支持O(1)时间获取字符串长度 支持获取子串">
@@ -355,6 +356,20 @@
 <h4 id="1-int编码"><a href="#1-int编码" class="headerlink" title="1. int编码"></a>1. int编码</h4><p>如果一个字符串对象保存的是整数值，并且这个整数值可以使用long类型来表示，那么字符串对象的底层编码就可以设置为<strong>int</strong>。</p>
 <h4 id="2-raw编码"><a href="#2-raw编码" class="headerlink" title="2. raw编码"></a>2. raw编码</h4><p>如果一个字符串对象保存的是字符串值，且这个字符串值的长度大于32字节，那么字符串对象将使用raw编码的方式来保存这个字符串值。<br>字符串对象将使用一个简单动态字符串（SDS）来保存这个字符串值，并将这个对象编码设置为raw.</p>
 <p><img src="/uploads/String-raw.png" alt="string-raw" title="string-raw"></p>
+<h4 id="3-embstr编码"><a href="#3-embstr编码" class="headerlink" title="3. embstr编码"></a>3. embstr编码</h4><p>如果一个字符串对象保存的是字符串值，且这个字符串值的长度小于等于32字节，那么字符串对象将使用embstr编码的方式来保存这个字符串值。embstr同样使用sds实现，和raw的区别是</p>
+<ul>
+<li>embstr是一种专门用于保存短字符串的优化编码方法，embstr分配的内存空间是连续的。</li>
+<li>embstr创建字符串的内存分配次数由raw的两次降为一次，释放时也只需要调用一次内存释放函数.</li>
+<li>embstr比raw能更好的利用连续内存作缓存.</li>
+</ul>
+<p><img src="/uploads/String-embstr.png" alt="String-embstr" title="String-embstr"></p>
+<h4 id="编码转换注意事项"><a href="#编码转换注意事项" class="headerlink" title="编码转换注意事项"></a>编码转换注意事项</h4><ul>
+<li>long/double类型的数据是作为字符串来存储的，只有在使用的时候才会换回浮点数计算</li>
+<li>embstr编码对象做任何修改都会先换回raw类型</li>
+</ul>
+<blockquote>
+<p>未完待续……</p>
+</blockquote>
 
       
     </div>
@@ -514,7 +529,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis数据结构和底层实现"><span class="nav-number">1.</span> <span class="nav-text">redis数据结构和底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-redis基本数据结构"><span class="nav-number">1.1.</span> <span class="nav-text">1. redis基本数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-String对象使用场景与底层实现"><span class="nav-number">1.2.</span> <span class="nav-text">2. String对象使用场景与底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-使用场景"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-底层实现"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-int编码"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">1. int编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-raw编码"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2. raw编码</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis数据结构和底层实现"><span class="nav-number">1.</span> <span class="nav-text">redis数据结构和底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-redis基本数据结构"><span class="nav-number">1.1.</span> <span class="nav-text">1. redis基本数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-String对象使用场景与底层实现"><span class="nav-number">1.2.</span> <span class="nav-text">2. String对象使用场景与底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-使用场景"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-底层实现"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-int编码"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">1. int编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-raw编码"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2. raw编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-embstr编码"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">3. embstr编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编码转换注意事项"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">编码转换注意事项</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
