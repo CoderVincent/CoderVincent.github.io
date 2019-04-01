@@ -79,18 +79,20 @@
 
 
 
-<meta name="description" content="redis实现分布式锁 最近面试，频繁被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变">
+<meta name="description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  2. String对象使用场景与底层实现1.使用场景简单的key-value类型，value不仅可以是字符串还可以是数字。  原子计数器 支持append 支持O(1)时间获取字符串长度 支持获取子串">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis如何实现分布式锁">
-<meta property="og:url" content="http://yoursite.com/2019/03/31/redis如何实现分布式锁/index.html">
+<meta property="og:title" content="redis数据结构与底层实现">
+<meta property="og:url" content="http://yoursite.com/2019/04/01/redis数据结构与底层实现/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="redis实现分布式锁 最近面试，频繁被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变">
+<meta property="og:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  2. String对象使用场景与底层实现1.使用场景简单的key-value类型，value不仅可以是字符串还可以是数字。  原子计数器 支持append 支持O(1)时间获取字符串长度 支持获取子串">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-01T03:34:58.036Z">
+<meta property="og:image" content="http://yoursite.com/uploads/String-raw.png">
+<meta property="og:updated_time" content="2019-04-01T07:14:17.053Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="redis如何实现分布式锁">
-<meta name="twitter:description" content="redis实现分布式锁 最近面试，频繁被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变">
+<meta name="twitter:title" content="redis数据结构与底层实现">
+<meta name="twitter:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  2. String对象使用场景与底层实现1.使用场景简单的key-value类型，value不仅可以是字符串还可以是数字。  原子计数器 支持append 支持O(1)时间获取字符串长度 支持获取子串">
+<meta name="twitter:image" content="http://yoursite.com/uploads/String-raw.png">
 
 
 
@@ -120,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/31/redis如何实现分布式锁/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/04/01/redis数据结构与底层实现/"/>
 
 
 
 
 
-  <title>redis如何实现分布式锁 | 一个杯子</title>
+  <title>redis数据结构与底层实现 | 一个杯子</title>
   
 
 
@@ -243,7 +245,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/31/redis如何实现分布式锁/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/01/redis数据结构与底层实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -260,7 +262,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">redis如何实现分布式锁</h1>
+          <h1 class="post-title" itemprop="name headline">redis数据结构与底层实现</h1>
         
 
         <div class="post-meta">
@@ -272,8 +274,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-31T20:54:49+08:00">
-                2019-03-31
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-01T15:13:59+08:00">
+                2019-04-01
               </time>
             
 
@@ -332,18 +334,27 @@
       
 
       
-        <h1 id="redis实现分布式锁"><a href="#redis实现分布式锁" class="headerlink" title="redis实现分布式锁"></a>redis实现分布式锁</h1><blockquote>
-<p>最近面试，频繁被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。</p>
+        <h1 id="redis数据结构和底层实现"><a href="#redis数据结构和底层实现" class="headerlink" title="redis数据结构和底层实现"></a>redis数据结构和底层实现</h1><blockquote>
+<p>参考书籍：《redis设计与实现》</p>
 </blockquote>
-<h2 id="1-版本1"><a href="#1-版本1" class="headerlink" title="1. 版本1"></a>1. 版本1</h2><h3 id="加锁：setNX（）"><a href="#加锁：setNX（）" class="headerlink" title="加锁：setNX（）"></a>加锁：setNX（）</h3><h3 id="设置超时时间：expire（）"><a href="#设置超时时间：expire（）" class="headerlink" title="设置超时时间：expire（）"></a>设置超时时间：expire（）</h3><h3 id="解锁：del（key）"><a href="#解锁：del（key）" class="headerlink" title="解锁：del（key）"></a>解锁：del（key）</h3><p>问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。</p>
-<h2 id="2-版本2"><a href="#2-版本2" class="headerlink" title="2. 版本2"></a>2. 版本2</h2><h3 id="加锁-设置超时时间：set（key，1，expireTIme，NX）"><a href="#加锁-设置超时时间：set（key，1，expireTIme，NX）" class="headerlink" title="加锁+设置超时时间：set（key，1，expireTIme，NX）"></a>加锁+设置超时时间：set（key，1，expireTIme，NX）</h3><p>解决了线程还未来得及设置超时时间就挂掉，锁变得“长生不老”的问题。</p>
-<p>问题所在：不支持可重入，有并发风险，有误删其他线程锁的风险</p>
-<h2 id="3-版本3"><a href="#3-版本3" class="headerlink" title="3. 版本3"></a>3. 版本3</h2><h3 id="加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）"><a href="#加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）" class="headerlink" title="加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）"></a>加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）</h3><p>解决了可重入和误删风险。<br>问题所在：判断锁和解锁不是原子操作，还是有并发风险。</p>
-<h2 id="4-版本4"><a href="#4-版本4" class="headerlink" title="4. 版本4"></a>4. 版本4</h2><h3 id="使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"><a href="#使用lua脚本，可以组合多个命令，将判断和解决变为原子操作" class="headerlink" title="使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"></a>使用lua脚本，可以组合多个命令，将判断和解决变为原子操作</h3><h2 id="5-版本5"><a href="#5-版本5" class="headerlink" title="5. 版本5"></a>5. 版本5</h2><h3 id="使用守护线程"><a href="#使用守护线程" class="headerlink" title="使用守护线程"></a>使用守护线程</h3><p>每个应用抢占锁成功后开启一个守护线程，守护线程用来在应用还没执行完锁快到期时给应用“加油”（延长到期时间），应用和守护线程共生死，否则会出现死锁问题。</p>
-<blockquote>
-<p>这一篇原本写了很长，由于使用的在线编辑器，一个不小心点了某个连接~导致文章内容丢失。。。。于是写的简略了些，记录过程。</p>
-</blockquote>
-<p><a href="https://juejin.im/post/5b16148a518825136137c8db" title="什么是分布式" target="_blank" rel="noopener">什么是分布式</a></p>
+<h2 id="1-redis基本数据结构"><a href="#1-redis基本数据结构" class="headerlink" title="1. redis基本数据结构"></a>1. redis基本数据结构</h2><ol>
+<li>String，字符串</li>
+<li>Hash，字典</li>
+<li>List，列表</li>
+<li>Set，集合</li>
+<li>Sorted Set，有序集合</li>
+</ol>
+<h2 id="2-String对象使用场景与底层实现"><a href="#2-String对象使用场景与底层实现" class="headerlink" title="2. String对象使用场景与底层实现"></a>2. String对象使用场景与底层实现</h2><h3 id="1-使用场景"><a href="#1-使用场景" class="headerlink" title="1.使用场景"></a>1.使用场景</h3><p>简单的key-value类型，value不仅可以是字符串还可以是数字。</p>
+<ul>
+<li>原子计数器</li>
+<li>支持append</li>
+<li>支持O(1)时间获取字符串长度</li>
+<li>支持获取子串</li>
+</ul>
+<h3 id="2-底层实现"><a href="#2-底层实现" class="headerlink" title="2. 底层实现"></a>2. 底层实现</h3><p>String对象的底层编码可以使用int、raw或者embstr实现。</p>
+<h4 id="1-int编码"><a href="#1-int编码" class="headerlink" title="1. int编码"></a>1. int编码</h4><p>如果一个字符串对象保存的是整数值，并且这个整数值可以使用long类型来表示，那么字符串对象的底层编码就可以设置为<strong>int</strong>。</p>
+<h4 id="2-raw编码"><a href="#2-raw编码" class="headerlink" title="2. raw编码"></a>2. raw编码</h4><p>如果一个字符串对象保存的是字符串值，且这个字符串值的长度大于32字节，那么字符串对象将使用raw编码的方式来保存这个字符串值。<br>字符串对象将使用一个简单动态字符串（SDS）来保存这个字符串值，并将这个对象编码设置为raw.</p>
+<p><img src="/uploads/String-raw.png" alt="string-raw" title="string-raw"></p>
 
       
     </div>
@@ -368,8 +379,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/15/java内存模型/" rel="next" title="java内存模型">
-                <i class="fa fa-chevron-left"></i> java内存模型
+              <a href="/2019/03/31/redis如何实现分布式锁/" rel="next" title="redis如何实现分布式锁">
+                <i class="fa fa-chevron-left"></i> redis如何实现分布式锁
               </a>
             
           </div>
@@ -377,10 +388,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/01/redis数据结构与底层实现/" rel="prev" title="redis数据结构与底层实现">
-                redis数据结构与底层实现 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -507,7 +514,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis实现分布式锁"><span class="nav-number">1.</span> <span class="nav-text">redis实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-版本1"><span class="nav-number">1.1.</span> <span class="nav-text">1. 版本1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁：setNX（）"><span class="nav-number">1.1.1.</span> <span class="nav-text">加锁：setNX（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置超时时间：expire（）"><span class="nav-number">1.1.2.</span> <span class="nav-text">设置超时时间：expire（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解锁：del（key）"><span class="nav-number">1.1.3.</span> <span class="nav-text">解锁：del（key）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-版本2"><span class="nav-number">1.2.</span> <span class="nav-text">2. 版本2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁-设置超时时间：set（key，1，expireTIme，NX）"><span class="nav-number">1.2.1.</span> <span class="nav-text">加锁+设置超时时间：set（key，1，expireTIme，NX）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-版本3"><span class="nav-number">1.3.</span> <span class="nav-text">3. 版本3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）"><span class="nav-number">1.3.1.</span> <span class="nav-text">加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-版本4"><span class="nav-number">1.4.</span> <span class="nav-text">4. 版本4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"><span class="nav-number">1.4.1.</span> <span class="nav-text">使用lua脚本，可以组合多个命令，将判断和解决变为原子操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-版本5"><span class="nav-number">1.5.</span> <span class="nav-text">5. 版本5</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用守护线程"><span class="nav-number">1.5.1.</span> <span class="nav-text">使用守护线程</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis数据结构和底层实现"><span class="nav-number">1.</span> <span class="nav-text">redis数据结构和底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-redis基本数据结构"><span class="nav-number">1.1.</span> <span class="nav-text">1. redis基本数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-String对象使用场景与底层实现"><span class="nav-number">1.2.</span> <span class="nav-text">2. String对象使用场景与底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-使用场景"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-底层实现"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-int编码"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">1. int编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-raw编码"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2. raw编码</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
