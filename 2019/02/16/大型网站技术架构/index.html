@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大型网站技术架构小结 如何开发一个性能好、可用性高、伸缩性好、易扩展且安全的网站，应该从哪些方面入手，是一个有趣的挑战。  1. 通用的网站架构模式 分层将网站划分为应用层、服务层、数据层。每层的功能不同好处是：可以将一个庞大的系统切分为不同的部分，便于分工合作开发和维护；各层之间具有一定的独立性，只要维持调用不变，各层可以根据具体问题独立的做出改变。挑战：必须合理的规划层次边界和接口，在开发过程">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大型网站技术架构">
+<meta property="og:url" content="http://yoursite.com/2019/02/16/大型网站技术架构/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="大型网站技术架构小结 如何开发一个性能好、可用性高、伸缩性好、易扩展且安全的网站，应该从哪些方面入手，是一个有趣的挑战。  1. 通用的网站架构模式 分层将网站划分为应用层、服务层、数据层。每层的功能不同好处是：可以将一个庞大的系统切分为不同的部分，便于分工合作开发和维护；各层之间具有一定的独立性，只要维持调用不变，各层可以根据具体问题独立的做出改变。挑战：必须合理的规划层次边界和接口，在开发过程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-16T14:13:00.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大型网站技术架构">
+<meta name="twitter:description" content="大型网站技术架构小结 如何开发一个性能好、可用性高、伸缩性好、易扩展且安全的网站，应该从哪些方面入手，是一个有趣的挑战。  1. 通用的网站架构模式 分层将网站划分为应用层、服务层、数据层。每层的功能不同好处是：可以将一个庞大的系统切分为不同的部分，便于分工合作开发和维护；各层之间具有一定的独立性，只要维持调用不变，各层可以根据具体问题独立的做出改变。挑战：必须合理的规划层次边界和接口，在开发过程">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/02/16/大型网站技术架构/"/>
+
+
+
+
+
+  <title>大型网站技术架构 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/16/大型网站技术架构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大型网站技术架构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T20:28:36+08:00">
+                2019-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="大型网站技术架构小结"><a href="#大型网站技术架构小结" class="headerlink" title="大型网站技术架构小结"></a>大型网站技术架构小结</h1><blockquote>
+<p>如何开发一个性能好、可用性高、伸缩性好、易扩展且安全的网站，应该从哪些方面入手，是一个有趣的挑战。</p>
+</blockquote>
+<h2 id="1-通用的网站架构模式"><a href="#1-通用的网站架构模式" class="headerlink" title="1. 通用的网站架构模式"></a>1. 通用的网站架构模式</h2><ul>
+<li>分层<br>将网站划分为应用层、服务层、数据层。每层的功能不同<br>好处是：可以将一个庞大的系统切分为不同的部分，便于分工合作开发和维护；各层之间具有一定的独立性，只要维持调用不变，各层可以根据具体问题独立的做出改变。<br>挑战：必须合理的规划层次边界和接口，在开发过程中应该严格的遵守分层架构的约束。</li>
+<li>分割<br>分层是横向的切分，分割是纵向的切分。如在应用层做分割，可以将购物、论坛、搜索、广告分割成不同的应用，由独立的团队负责，部署在不同的服务器上。</li>
+<li>分布式<br>通过远程调用，可以将切分后的模块部署在多台不同的机器上。<br>优点：可以有更多的计算机完成相同的功能，比如使用集群完成分割出来的订单功能。<br>缺点：给编码带来了复杂性，如单机事务变分布式事务、单机缓存变分布式缓存。还对数据一致性带来了要求，以及网络延迟可能会造成调用的时间损耗。</li>
+<li>集群<br>集群的作用简单来说就是提高可用性和，至少两台机器，如果一台宕机了，另外一台可以立即补上。</li>
+<li>缓存<br>提高性能<strong>一个方法是让数据在最前的位置就可以返回</strong>，利用缓存就是一个很好的选择，缓存多是将数据存储在高速运行介质上。常用如CDN（内容分发网络）：将静态资源部署在最近的服务器上，客户端请求时直接从上面拿。反向代理：反向代理也可以缓存静态资源、热点资源等。本地缓存:即应用服务器本地缓存着热点数据，应用程序可以在本机内存中直接访问数据，而无需访问数据库。</li>
+<li>分布式缓存<br>大型网站的数量十分的庞大，需要集群做分布式缓存，应用程序通过网络通信访问缓存数据。</li>
+<li>异步<br>将一个业务分为多个阶段，每个阶段之间通过共享数据的方式异步执行，可以提高总的运行速度。生产者消费者就是一个典型的异步，中间件有消息队列，作用包括提高系统可用性、加快网站响应速度、消除并发访问高峰。</li>
+<li>冗余备份<br>确保数据不丢失</li>
+<li>自动化<br>提高开发部署效率</li>
+<li>安全<br>常用加密、认证等方式保证安全，还有例如敏感词过滤、垃圾信息过滤这一类防护。</li>
+</ul>
+<h2 id="2-性能"><a href="#2-性能" class="headerlink" title="2. 性能"></a>2. 性能</h2><blockquote>
+<p>提高网站的性能需要考虑哪些点？我们通常用这样几个关键词来评估性能，响应时间、并发数、吞吐量（qps/tps/hps）。</p>
+</blockquote>
+<h4 id="1-如何排查性能瓶颈？"><a href="#1-如何排查性能瓶颈？" class="headerlink" title="1. 如何排查性能瓶颈？"></a>1. 如何排查性能瓶颈？</h4><p>问： 假设，有一个url请求，很长时间无响应，如何排查原因呢？<br>逐步排查，使用开发者工具查看是静态资源加载慢还是后台接口调用慢，如果是后者，先排查网络问题。然后再从应用层开始排查，分析哪个环节响应时间不合理、超过预期；检查监控数据，分析内存、磁盘、网络和cpu，以及代码和架构。一般顺序包括查看链路监控，服务器性能监控、方法调用优化。</p>
+<h5 id="web前端性能优化"><a href="#web前端性能优化" class="headerlink" title="web前端性能优化"></a>web前端性能优化</h5><p>浏览器访问优化、CDN加速、反向代理</p>
+<h5 id="应用服务器优化"><a href="#应用服务器优化" class="headerlink" title="应用服务器优化"></a>应用服务器优化</h5><p>分布式缓存、异步（流量消峰、整体并发）、使用集群（并发处理请求）、代码优化（线程池、对象池、多线程）</p>
+<h5 id="数据库优化"><a href="#数据库优化" class="headerlink" title="数据库优化"></a>数据库优化</h5><p>数据库调优相关</p>
+<h2 id="3-可用性"><a href="#3-可用性" class="headerlink" title="3. 可用性"></a>3. 可用性</h2><blockquote>
+<p>网站的高可用性是根基，如果一个网站频频宕机是任何人都接受不了的。现代大型网站一般都会分层、分割，所以整体可用性的前提是每个模块的可用性。</p>
+</blockquote>
+<h4 id="1-高可用性的应用"><a href="#1-高可用性的应用" class="headerlink" title="1. 高可用性的应用"></a>1. 高可用性的应用</h4><h5 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h5><ul>
+<li>关键词：无状态性，结点无状态才方便作失效转移，无状态指的是不保存上下文数据，每次仅仅根据请求做相应的业务逻辑处理，多个服务实例之间完全对等。既然每个节点是无状态的，那么面对多个节点组成的集群，我们就可以用负载均衡来分发请求，一旦其中一个结点宕机了，心跳失去连接就将这个节点剔除。</li>
+<li>对于应用层来说，很多模块都是用户直接接触的模块，那么就需要session保存用户状态，对于分布式服务来说就需要分布式session。实现分布式session有几种手段。1.session复制：效率低但方法简单，不适合有大量节点的集群。2.利用负载均衡的ip hash将来自同一个ip的请求打到同一台机器上：如果这个机器挂了，那么session也就丢失，不符合高可用的要求。3.利用cookie记录session：用户关闭cookie就没法用了…然后每次响应都要传递cookie，影响性能。4.session认证中心：用一个专门的模块管理分布式session，其他节点需要使用RPC调用的方式请求session。</li>
+</ul>
+<h5 id="服务层"><a href="#服务层" class="headerlink" title="服务层"></a>服务层</h5><p>服务层一般都是可复用的基础公共模块。</p>
+<ul>
+<li>分级管理，分核心和非核心，提供不对等的资源。遇到流量高峰时关闭一些低优先级的服务，</li>
+<li>超时设置，由于服务器宕机、线程死锁等原因可能导致应用程序对服务端的调用失去响应。进而导致用户请求长时间得不到响应，有了超时就有了反馈，调用者可以实现相关策略</li>
+<li>异步调用，分阶段调用</li>
+<li>服务降级，高峰期关停非核心服务，</li>
+<li>幂等性设计，多次重复调用和调用一次的结果是一样的。</li>
+</ul>
+<h5 id="数据层"><a href="#数据层" class="headerlink" title="数据层"></a>数据层</h5><h6 id="数据节点可用性"><a href="#数据节点可用性" class="headerlink" title="数据节点可用性"></a>数据节点可用性</h6><p>数据集群是有状态的，所以在做失效转移的时候就要考虑<strong>数据一致性</strong>了。提到数据一致性不得不提分布式的基础理论CAP（在面试蘑菇街的时候面试官问了我这个问题，我给他解释了一遍CAP各自代表什么，但是他强调我没有解释CAP理论的核心，后来才知道CAP理论说的是一个分布式系统无法同时满足一致性、数据可用性、分区耐受性这三个条件，其实我知道这个内容，但是没get到这个就是CAP的核心~）</p>
+<p>具体来说，数据一致性又可以分为数据强一致：物理存储中的数据总是一致的，数据用户一致：在用户访问时通过纠错和验证保证用户看到的是一致的，实际各个副本数据可能不一致。数据最终一致性：经过一段时间每个节点上的副本最终达到一致。</p>
+<h6 id="数据备份"><a href="#数据备份" class="headerlink" title="数据备份"></a>数据备份</h6><p>分数据冷备和数据热备，这一部分后面会单独再写点东西</p>
+<blockquote>
+<p>未完待续</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/02/redis数据结构与底层实现/" rel="next" title="redis数据结构与底层实现">
+                <i class="fa fa-chevron-left"></i> redis数据结构与底层实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/15/redis如何实现分布式锁/" rel="prev" title="redis如何实现分布式锁">
+                redis如何实现分布式锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大型网站技术架构小结"><span class="nav-number">1.</span> <span class="nav-text">大型网站技术架构小结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-通用的网站架构模式"><span class="nav-number">1.1.</span> <span class="nav-text">1. 通用的网站架构模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-性能"><span class="nav-number">1.2.</span> <span class="nav-text">2. 性能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-如何排查性能瓶颈？"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">1. 如何排查性能瓶颈？</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#web前端性能优化"><span class="nav-number">1.2.0.1.1.</span> <span class="nav-text">web前端性能优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#应用服务器优化"><span class="nav-number">1.2.0.1.2.</span> <span class="nav-text">应用服务器优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据库优化"><span class="nav-number">1.2.0.1.3.</span> <span class="nav-text">数据库优化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-可用性"><span class="nav-number">1.3.</span> <span class="nav-text">3. 可用性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-高可用性的应用"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">1. 高可用性的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#应用层"><span class="nav-number">1.3.0.1.1.</span> <span class="nav-text">应用层</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#服务层"><span class="nav-number">1.3.0.1.2.</span> <span class="nav-text">服务层</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据层"><span class="nav-number">1.3.0.1.3.</span> <span class="nav-text">数据层</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#数据节点可用性"><span class="nav-number">1.3.0.1.3.1.</span> <span class="nav-text">数据节点可用性</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#数据备份"><span class="nav-number">1.3.0.1.3.2.</span> <span class="nav-text">数据备份</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
