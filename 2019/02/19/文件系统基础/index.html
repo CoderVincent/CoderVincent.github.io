@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="文件系统的实现 操作系统中有很多种文件（FAT32、NTFS、ext2、ext3等），层次接口不尽相同。对于文件系统，要了解其实现的方法，目录是如何实现的、文件是如何实现的、存储空间管理。  1. 文件系统层次结构用户调用接口-&amp;gt;文件目录系统-&amp;gt;存取控制验证-&amp;gt;逻辑文件系统与文件信息缓冲区-&amp;gt;物理文件系统-&amp;gt;磁盘分配模块 如果要我们设计一个文件系统，不管是什么类型，都">
+<meta name="description" content="文件系统基础 文件是以计算机硬盘为载体存储在计算机上的信息集合，文件可以是文档、图片、程序等。在系统运行时，计算机以进程为基本单位进行资源的调度和分配，在用户进行的输入、输出中，以文件为基本单位。  1.文件的逻辑结构文件的逻辑结构分为无结构文件和有结构文件，无结构文件指的是字符流，比如二进制文件和字符文件，又称流式文件。有结构文件指的是一组相似的记录，包括顺序文件、索引文件、索引顺序文件和直接文">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="文件系统的实现">
-<meta property="og:url" content="http://yoursite.com/2019/04/18/文件系统的实现/index.html">
+<meta property="og:title" content="文件系统基础">
+<meta property="og:url" content="http://yoursite.com/2019/02/19/文件系统基础/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="文件系统的实现 操作系统中有很多种文件（FAT32、NTFS、ext2、ext3等），层次接口不尽相同。对于文件系统，要了解其实现的方法，目录是如何实现的、文件是如何实现的、存储空间管理。  1. 文件系统层次结构用户调用接口-&amp;gt;文件目录系统-&amp;gt;存取控制验证-&amp;gt;逻辑文件系统与文件信息缓冲区-&amp;gt;物理文件系统-&amp;gt;磁盘分配模块 如果要我们设计一个文件系统，不管是什么类型，都">
+<meta property="og:description" content="文件系统基础 文件是以计算机硬盘为载体存储在计算机上的信息集合，文件可以是文档、图片、程序等。在系统运行时，计算机以进程为基本单位进行资源的调度和分配，在用户进行的输入、输出中，以文件为基本单位。  1.文件的逻辑结构文件的逻辑结构分为无结构文件和有结构文件，无结构文件指的是字符流，比如二进制文件和字符文件，又称流式文件。有结构文件指的是一组相似的记录，包括顺序文件、索引文件、索引顺序文件和直接文">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-18T09:26:47.018Z">
+<meta property="og:updated_time" content="2019-04-18T11:10:46.703Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="文件系统的实现">
-<meta name="twitter:description" content="文件系统的实现 操作系统中有很多种文件（FAT32、NTFS、ext2、ext3等），层次接口不尽相同。对于文件系统，要了解其实现的方法，目录是如何实现的、文件是如何实现的、存储空间管理。  1. 文件系统层次结构用户调用接口-&amp;gt;文件目录系统-&amp;gt;存取控制验证-&amp;gt;逻辑文件系统与文件信息缓冲区-&amp;gt;物理文件系统-&amp;gt;磁盘分配模块 如果要我们设计一个文件系统，不管是什么类型，都">
+<meta name="twitter:title" content="文件系统基础">
+<meta name="twitter:description" content="文件系统基础 文件是以计算机硬盘为载体存储在计算机上的信息集合，文件可以是文档、图片、程序等。在系统运行时，计算机以进程为基本单位进行资源的调度和分配，在用户进行的输入、输出中，以文件为基本单位。  1.文件的逻辑结构文件的逻辑结构分为无结构文件和有结构文件，无结构文件指的是字符流，比如二进制文件和字符文件，又称流式文件。有结构文件指的是一组相似的记录，包括顺序文件、索引文件、索引顺序文件和直接文">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/18/文件系统的实现/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/02/19/文件系统基础/"/>
 
 
 
 
 
-  <title>文件系统的实现 | 一个杯子</title>
+  <title>文件系统基础 | 一个杯子</title>
   
 
 
@@ -243,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/18/文件系统的实现/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/19/文件系统基础/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">文件系统的实现</h1>
+          <h1 class="post-title" itemprop="name headline">文件系统基础</h1>
         
 
         <div class="post-meta">
@@ -272,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-18T16:58:30+08:00">
-                2019-04-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-19T15:51:37+08:00">
+                2019-02-19
               </time>
             
 
@@ -332,21 +332,17 @@
       
 
       
-        <h1 id="文件系统的实现"><a href="#文件系统的实现" class="headerlink" title="文件系统的实现"></a>文件系统的实现</h1><blockquote>
-<p>操作系统中有很多种文件（FAT32、NTFS、ext2、ext3等），层次接口不尽相同。对于文件系统，要了解其实现的方法，目录是如何实现的、文件是如何实现的、存储空间管理。</p>
+        <h1 id="文件系统基础"><a href="#文件系统基础" class="headerlink" title="文件系统基础"></a>文件系统基础</h1><blockquote>
+<p><strong>文件是以计算机硬盘为载体存储在计算机上的信息集合，文件可以是文档、图片、程序等。在系统运行时，计算机以进程为基本单位进行资源的调度和分配，在用户进行的输入、输出中，以文件为基本单位。</strong></p>
 </blockquote>
-<h2 id="1-文件系统层次结构"><a href="#1-文件系统层次结构" class="headerlink" title="1. 文件系统层次结构"></a>1. 文件系统层次结构</h2><p>用户调用接口-&gt;文件目录系统-&gt;存取控制验证-&gt;逻辑文件系统与文件信息缓冲区-&gt;物理文件系统-&gt;磁盘分配模块</p>
-<p>如果要我们设计一个文件系统，不管是什么类型，都应该从这个流程出发。</p>
-<h2 id="2-目录实现"><a href="#2-目录实现" class="headerlink" title="2. 目录实现"></a>2. 目录实现</h2><p>有线性列表和哈希表两种方式，前者实现简单，查找效率低。后者查找效率要高于前者。</p>
-<h2 id="3-文件实现"><a href="#3-文件实现" class="headerlink" title="3. 文件实现"></a>3. 文件实现</h2><p>文件的实现研究的就是文件的物理结构，如何为文件分配磁盘块是一个问题。一般的方式有三种：</p>
-<ul>
-<li>连续分配<br>线性排序，实现简单，存取速度快。文件不易于动态增加，可用空间不连续。也就是有外部碎片存在。</li>
-<li>链接分配<br>较连续分配有更高的利用率，同时又分为隐式链接和显示链接。前者的缺点是无法直接访问盘块，只能通过指针顺序访问文件，以及盘块指针消耗了一定的存储空间。由于指针丢失，数据就访问不到了。显示链接用一张连接表来保存指针，称为FAT（文件分配表）</li>
-<li>索引分配<br>可直接访问，无外部碎片。缺点：开销他，索引快大小无法权衡。</li>
-</ul>
-<h2 id="4-文件存储空间管理"><a href="#4-文件存储空间管理" class="headerlink" title="4. 文件存储空间管理"></a>4. 文件存储空间管理</h2><blockquote>
-<p>未完待续</p>
+<h2 id="1-文件的逻辑结构"><a href="#1-文件的逻辑结构" class="headerlink" title="1.文件的逻辑结构"></a>1.文件的逻辑结构</h2><p>文件的逻辑结构分为无结构文件和有结构文件，无结构文件指的是字符流，比如二进制文件和字符文件，又称流式文件。有结构文件指的是一组相似的记录，包括顺序文件、索引文件、索引顺序文件和直接文件。前三个都好理解，最后一个直接文件指的是：通过哈希函数直接决定记录地址，可能存在的问题是有hash碰撞。索引文件适用于定长记录文件，索引顺序文件用来记录变长文件。</p>
+<h2 id="2-文件的目录结构"><a href="#2-文件的目录结构" class="headerlink" title="2.文件的目录结构"></a>2.文件的目录结构</h2><blockquote>
+<p>用户对于文件的使用是按名读取，这个时候就需要映射到文件所在的磁盘，目录能够加快查找的速度。</p>
 </blockquote>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><p><strong>文件控制块和索引结点</strong><br>文件控制块（FCB）：存放控制文件需要的各种信息的数据结构，以实现按名存取。包括文件描述、物理地址、文件全向、创建时间。<br>索引结点：找到文件后查找文件数据项时会使用</p>
+<p><strong>单级目录结构、两级目录结构、多级目录结构、无环图目录结构</strong><br>单级目录结构：查找速度慢、解决不了重名问题<br>两级目录结构：能解决重名问题，无法对文件分类，不够灵活<br>多级目录结构：绝对路径和相对路径针对的就是多级目录结构来说，速度快，但是不便于实现文件共享。<br>无环图目录结构：用于实现文件共享，采用计数模式。</p>
+<h3 id="文件共享"><a href="#文件共享" class="headerlink" title="文件共享"></a>文件共享</h3><p>硬链接和软连接<br>硬链接：用户文件目录直接指向索引结点，有一个指向就count++，断开一个就count–，原理也是引用计数法，这种方式比软连接快。<br>软连接：系统创建一个LINK类型的新文件，是共享文件的副本，只有一个用户指向真正的文件，其他的用户都只拥有这个副本。也就是说只有拥有”真身”的那个用户才拥有删除的权利。可能导致的问题，当试图遍历整个文件系统的时候，会多次遍历到该共享文件。</p>
+<h3 id="文件保护"><a href="#文件保护" class="headerlink" title="文件保护"></a>文件保护</h3><p>文件保护通过口令保护、加密保护和访问控制等方式实现。<br><strong>访问控制列表</strong>：维护一个访问控制列表，列表内容包括拥有者、组和其他。</p>
 
       
     </div>
@@ -371,8 +367,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/18/文件系统基础/" rel="next" title="文件系统基础">
-                <i class="fa fa-chevron-left"></i> 文件系统基础
+              <a href="/2019/02/16/大型网站技术架构/" rel="next" title="大型网站技术架构">
+                <i class="fa fa-chevron-left"></i> 大型网站技术架构
               </a>
             
           </div>
@@ -380,6 +376,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/15/redis如何实现分布式锁/" rel="prev" title="redis如何实现分布式锁">
+                redis如何实现分布式锁 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -460,7 +460,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -506,7 +506,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统的实现"><span class="nav-number">1.</span> <span class="nav-text">文件系统的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-文件系统层次结构"><span class="nav-number">1.1.</span> <span class="nav-text">1. 文件系统层次结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-目录实现"><span class="nav-number">1.2.</span> <span class="nav-text">2. 目录实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-文件实现"><span class="nav-number">1.3.</span> <span class="nav-text">3. 文件实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-文件存储空间管理"><span class="nav-number">1.4.</span> <span class="nav-text">4. 文件存储空间管理</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统基础"><span class="nav-number">1.</span> <span class="nav-text">文件系统基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-文件的逻辑结构"><span class="nav-number">1.1.</span> <span class="nav-text">1.文件的逻辑结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-文件的目录结构"><span class="nav-number">1.2.</span> <span class="nav-text">2.文件的目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目录结构"><span class="nav-number">1.2.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件共享"><span class="nav-number">1.2.2.</span> <span class="nav-text">文件共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件保护"><span class="nav-number">1.2.3.</span> <span class="nav-text">文件保护</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
