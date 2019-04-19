@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="GC系列终章 最近看了很多GC的内容，从GC算法到垃圾回收器再到jvm调优，今天做一个总结，每天整理，提升多多！  1.确定GC的对象（哪些对象已死？） 高中物理老师告诉我们，学习要直捣黄龙！所以本篇文章争取不多废话，把有用的东西都铺展开来说。  手段有二 引用计数法：对于一个对象来说，有一个引用指向它。计数器就加1，断开这个引用，计数器就减1。这样的方式同操作系统的文件系统中文件共享手段的硬链接">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC系列终章">
+<meta property="og:url" content="http://yoursite.com/2019/04/19/GC系列终章/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="GC系列终章 最近看了很多GC的内容，从GC算法到垃圾回收器再到jvm调优，今天做一个总结，每天整理，提升多多！  1.确定GC的对象（哪些对象已死？） 高中物理老师告诉我们，学习要直捣黄龙！所以本篇文章争取不多废话，把有用的东西都铺展开来说。  手段有二 引用计数法：对于一个对象来说，有一个引用指向它。计数器就加1，断开这个引用，计数器就减1。这样的方式同操作系统的文件系统中文件共享手段的硬链接">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/uploads/GC回收器.png">
+<meta property="og:updated_time" content="2019-04-19T08:51:46.233Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GC系列终章">
+<meta name="twitter:description" content="GC系列终章 最近看了很多GC的内容，从GC算法到垃圾回收器再到jvm调优，今天做一个总结，每天整理，提升多多！  1.确定GC的对象（哪些对象已死？） 高中物理老师告诉我们，学习要直捣黄龙！所以本篇文章争取不多废话，把有用的东西都铺展开来说。  手段有二 引用计数法：对于一个对象来说，有一个引用指向它。计数器就加1，断开这个引用，计数器就减1。这样的方式同操作系统的文件系统中文件共享手段的硬链接">
+<meta name="twitter:image" content="http://yoursite.com/uploads/GC回收器.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/19/GC系列终章/"/>
+
+
+
+
+
+  <title>GC系列终章 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/GC系列终章/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GC系列终章</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-19T15:09:10+08:00">
+                2019-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="GC系列终章"><a href="#GC系列终章" class="headerlink" title="GC系列终章"></a>GC系列终章</h1><blockquote>
+<p>最近看了很多GC的内容，从GC算法到垃圾回收器再到jvm调优，今天做一个总结，每天整理，提升多多！</p>
+</blockquote>
+<h2 id="1-确定GC的对象（哪些对象已死？）"><a href="#1-确定GC的对象（哪些对象已死？）" class="headerlink" title="1.确定GC的对象（哪些对象已死？）"></a>1.确定GC的对象（哪些对象已死？）</h2><blockquote>
+<p>高中物理老师告诉我们，学习要直捣黄龙！所以本篇文章争取不多废话，把有用的东西都铺展开来说。</p>
+</blockquote>
+<h3 id="手段有二"><a href="#手段有二" class="headerlink" title="手段有二"></a>手段有二</h3><ul>
+<li>引用计数法：对于一个对象来说，有一个引用指向它。计数器就加1，断开这个引用，计数器就减1。这样的方式同操作系统的文件系统中文件共享手段的硬链接类似，但是区别在于GC对象也是可以指向别的对象的，所以就会有循环引用的问题存在，这也是不使用它的一个原因。</li>
+<li><p>可达性分析算法：首先，需要确定GC ROOT，那么问题来了，到底哪些对象可以确定为GC ROOT对象呢？</p>
+<pre><code>GC ROOT：就是那些在当前引用下肯定不会被回收的对象，比如静态引用。而GC是在堆上发生的，而虚拟机栈、方法区、本地方法栈不归堆管理，所以选择 1. 虚拟机栈中引用的对象 2. 方法区中类静态属性引用的对象 3.方法区中常量引用的对象 4. 本地方法栈中JNI引用的对象。
+关于可达性分析算法的第二个问题就是GC Root trancing是如何开始的，根据国内JVM某大牛的说法，GC ROOT Trancing就是从一个给定集合的根出发，按照引用关系遍历对象图，找出所有存活的对象，把剩下的对象认为是死亡的对象，他们所占的空间是可以被回收的空间。
+经过一次GC Root Trancing后，没有和根关联起来的对象会第一次被标记，后面再GC的过程中还会进行第二次标记，即执行一次finalize方法，此时如果第一次被标记的对象又重新和某个根对象关联起来了，那么它仍然可以存活。
+</code></pre></li>
+</ul>
+<h2 id="2-垃圾回收算法"><a href="#2-垃圾回收算法" class="headerlink" title="2.垃圾回收算法"></a>2.垃圾回收算法</h2><blockquote>
+<p>对于垃圾回收算法，有标记-清除、复制算法、标记-整理三种。复制算法常常用在新生代、标记-整理算法和标记-清除算法常常用在老年代。</p>
+</blockquote>
+<h5 id="前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？"><a href="#前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？" class="headerlink" title="前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？"></a>前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？</h5><pre><code>原因在于jvm根据各个年代的特点采用最适当的收集算法，新生代中的对象存活的少，每次Minor GC都会有大批量的对象死去，所以复制算法只用复制少量的对象就可以完成收集。而在老年代，一般都是存活很久的对象，而且没有额外的空间作担保，所以采用标记-整理和标记-清除算法。
+</code></pre><h2 id="3-垃圾收集器"><a href="#3-垃圾收集器" class="headerlink" title="3. 垃圾收集器"></a>3. 垃圾收集器</h2><blockquote>
+<p>关于7种垃圾收集器，网上的优秀博客也有很多，在这里只会记录一些我之前困惑的问题。</p>
+</blockquote>
+<h5 id="server端和client端中的垃圾回收有什么区别？"><a href="#server端和client端中的垃圾回收有什么区别？" class="headerlink" title="server端和client端中的垃圾回收有什么区别？"></a>server端和client端中的垃圾回收有什么区别？</h5><p>server启动慢，启动后性能高，主要是堆的区间大小设的大，适合B/S系统上web系统。client启动快，启动后性能差，适合有交互多的GUI。</p>
+<h5 id="说说你知道的垃圾收集器、以及他们的特点作用的区域。"><a href="#说说你知道的垃圾收集器、以及他们的特点作用的区域。" class="headerlink" title="说说你知道的垃圾收集器、以及他们的特点作用的区域。"></a>说说你知道的垃圾收集器、以及他们的特点作用的区域。</h5><p><img src="/uploads/GC回收器.png" alt="GC回收器" title="GC回收器"></p>
+<p>记忆思路：单线程/多线程，新生代/老年代，Parallel Scavenge（吞吐量），cms,G1，结合图，很容易记忆</p>
+<h5 id="说说CMS收集器"><a href="#说说CMS收集器" class="headerlink" title="说说CMS收集器"></a>说说CMS收集器</h5><blockquote>
+<p>从这几个方面去说：收集过程、收集区域、收集算法、优点、缺点。</p>
+</blockquote>
+<pre><code>收集过程，周的书上对CMS的收集过程描述为4个阶段。初始标记：stw、标记GC root能直接关联到的对象。这句话应该这样理解，理解为选择可以作为GC Root的对象，并装在GC Roots集合中，这叫做直接关联而非间接关联。并发标记：GC Root Trancing过程，在垃圾回收算法中已经说过。这个过程虽然很慢，但是由于是并发，所以不需要STW。**并发预处理**：理清这个阶段标记哪些对象，1.并发阶段被修改了的对象。2.从新生代晋升的对象。3.新分配到老年代的对象。这里就有一个问题存在，我们回收的是老年代，可是关联的对象有可能存在新生代，所以GC时会进行全堆扫描，效率低下。同理，在回收新生代的时候也可能有关联对象在老年代。在这位老哥的博客中找到了答案[详解CMS回收机制][1]。重新标记：暂停所有用户线程，重新扫描堆中的对象，进行可达性分析,标记活着的对象。并发清理：用户线程被重新激活，同时清理那些无效的对象。
+</code></pre><h5 id="说说G1收集器。为什么G1收集器要用region代替老年代和新生代？"><a href="#说说G1收集器。为什么G1收集器要用region代替老年代和新生代？" class="headerlink" title="说说G1收集器。为什么G1收集器要用region代替老年代和新生代？"></a>说说G1收集器。为什么G1收集器要用region代替老年代和新生代？</h5><blockquote>
+<p>同样从上面5个方面去说。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/18/CMS收集器详解/" rel="next" title="CMS收集器详解">
+                <i class="fa fa-chevron-left"></i> CMS收集器详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GC系列终章"><span class="nav-number">1.</span> <span class="nav-text">GC系列终章</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-确定GC的对象（哪些对象已死？）"><span class="nav-number">1.1.</span> <span class="nav-text">1.确定GC的对象（哪些对象已死？）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手段有二"><span class="nav-number">1.1.1.</span> <span class="nav-text">手段有二</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-垃圾回收算法"><span class="nav-number">1.2.</span> <span class="nav-text">2.垃圾回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？"><span class="nav-number">1.2.0.0.1.</span> <span class="nav-text">前段时间面试阿里被问到，为什么要分代收集？比如在新生代用复制算法、在老年代用标记-整理算法？</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-垃圾收集器"><span class="nav-number">1.3.</span> <span class="nav-text">3. 垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#server端和client端中的垃圾回收有什么区别？"><span class="nav-number">1.3.0.0.1.</span> <span class="nav-text">server端和client端中的垃圾回收有什么区别？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#说说你知道的垃圾收集器、以及他们的特点作用的区域。"><span class="nav-number">1.3.0.0.2.</span> <span class="nav-text">说说你知道的垃圾收集器、以及他们的特点作用的区域。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#说说CMS收集器"><span class="nav-number">1.3.0.0.3.</span> <span class="nav-text">说说CMS收集器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#说说G1收集器。为什么G1收集器要用region代替老年代和新生代？"><span class="nav-number">1.3.0.0.4.</span> <span class="nav-text">说说G1收集器。为什么G1收集器要用region代替老年代和新生代？</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
