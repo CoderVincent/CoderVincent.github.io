@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://yoursite.com/uploads/redis复制同步.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploiads/redis新版本PSYNC执行过程.png">
 <meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploads/redis复制身份验证.png">
-<meta property="og:updated_time" content="2019-04-22T12:43:59.793Z">
+<meta property="og:updated_time" content="2019-04-22T12:48:01.170Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis复制原理">
 <meta name="twitter:description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
@@ -366,7 +366,7 @@
 <p>为什么建立完套接字还要发一个ping命令，作用1.检查套接字读写状态。作用2.检查主服务器状态是否异常。</p>
 </blockquote>
 </li>
-<li>身份验证。如图<br><img src="uploads/redis复制身份验证.png" alt="redis复制身份验证" title="redis复制身份验证"></li>
+<li>身份验证。如图<br><img src="uploads/redis复制身份验证.png" alt="redis复制身份验证" title="redis复制身份验证.png"></li>
 <li>发送端口信息，这个部分主服务会监听从服务器的端口，进行命令传播和同步</li>
 </ol>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对于redis复制，还有几点需要补充的是</p>
