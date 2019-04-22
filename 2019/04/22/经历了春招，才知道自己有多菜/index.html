@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="经历了春招，才知道自己有多菜 我的春招开始于2月底，我一共投递了阿里、腾讯、百度（笔试挂）、京东、网易、华为、蘑菇街、拼多多（笔试挂）、携程（笔试挂）、微众银行（笔试挂）以及虎牙、斗鱼、blibili、小米、oppo，后面5家公司投递完之后就没消息了。其中给面试的除了有阿里、腾讯、网易、华为、蘑菇街这几家，目前为止除了蘑菇街（offer）、华为（面试过了，笔试需要一次加试）之外，其余全部阵亡。">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="经历了春招，才知道自己有多菜">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/经历了春招，才知道自己有多菜/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="经历了春招，才知道自己有多菜 我的春招开始于2月底，我一共投递了阿里、腾讯、百度（笔试挂）、京东、网易、华为、蘑菇街、拼多多（笔试挂）、携程（笔试挂）、微众银行（笔试挂）以及虎牙、斗鱼、blibili、小米、oppo，后面5家公司投递完之后就没消息了。其中给面试的除了有阿里、腾讯、网易、华为、蘑菇街这几家，目前为止除了蘑菇街（offer）、华为（面试过了，笔试需要一次加试）之外，其余全部阵亡。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-22T10:39:40.979Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="经历了春招，才知道自己有多菜">
+<meta name="twitter:description" content="经历了春招，才知道自己有多菜 我的春招开始于2月底，我一共投递了阿里、腾讯、百度（笔试挂）、京东、网易、华为、蘑菇街、拼多多（笔试挂）、携程（笔试挂）、微众银行（笔试挂）以及虎牙、斗鱼、blibili、小米、oppo，后面5家公司投递完之后就没消息了。其中给面试的除了有阿里、腾讯、网易、华为、蘑菇街这几家，目前为止除了蘑菇街（offer）、华为（面试过了，笔试需要一次加试）之外，其余全部阵亡。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/22/经历了春招，才知道自己有多菜/"/>
+
+
+
+
+
+  <title>经历了春招，才知道自己有多菜 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/经历了春招，才知道自己有多菜/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">经历了春招，才知道自己有多菜</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-22T18:38:58+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="经历了春招，才知道自己有多菜"><a href="#经历了春招，才知道自己有多菜" class="headerlink" title="经历了春招，才知道自己有多菜"></a>经历了春招，才知道自己有多菜</h1><blockquote>
+<p>我的春招开始于2月底，我一共投递了阿里、腾讯、百度（笔试挂）、京东、网易、华为、蘑菇街、拼多多（笔试挂）、携程（笔试挂）、微众银行（笔试挂）以及虎牙、斗鱼、blibili、小米、oppo，后面5家公司投递完之后就没消息了。其中给面试的除了有阿里、腾讯、网易、华为、蘑菇街这几家，目前为止除了蘑菇街（offer）、华为（面试过了，笔试需要一次加试）之外，其余全部阵亡。</p>
+</blockquote>
+<h2 id="腾讯第一次面试（2月底）"><a href="#腾讯第一次面试（2月底）" class="headerlink" title="腾讯第一次面试（2月底）"></a>腾讯第一次面试（2月底）</h2><blockquote>
+<p>这是我的人生第一次面试，腾讯是因为我在去年的时候投了一次日常实习，当时抱着试一试的心态投了，结果直到春招的时候才收到电话，面试官打过来也是问我在找实习没，我当时心里十分激动并告诉他我在找暑期实习，他说要不要试一试，然后我居然答应了。。。于是就约了第二天的晚上，现在想想我也真是不了解面试到底是怎么一回事，完全没有任何准备就上了</p>
+</blockquote>
+<h3 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h3><p>当时我的简历还是半年前的简历，面试官问我其中一个项目，我答的磕磕巴巴，因为这个项目早就停了，问了十几分钟实在受不了遂告之我最近做的项目，描述了一下后面试官又对我这个项目提了几个问题，我记不太清问的什么了，但是很常规，类似于你做了哪些事情、你碰到的问题之类，总之我答的一塌糊涂。</p>
+<h3 id="基础问题"><a href="#基础问题" class="headerlink" title="基础问题"></a>基础问题</h3><ol>
+<li>Linux用过哪些命令</li>
+<li>如何查看cpu使用情况</li>
+<li>如何查看cpu占用最高的进程</li>
+<li>说一下快排的思路（0准备的我连这个答的都有问题）</li>
+<li>tcp和udp的区别</li>
+<li>http响应码</li>
+<li>单链表判断有没有环（没刷题的我照样没答出来）</li>
+</ol>
+<p>反正挺惨不忍睹的，毕竟没任何准备。毫无疑问一面挂掉。</p>
+<h2 id="网易（二面挂）"><a href="#网易（二面挂）" class="headerlink" title="网易（二面挂）"></a>网易（二面挂）</h2><h3 id="网易一面"><a href="#网易一面" class="headerlink" title="网易一面"></a>网易一面</h3><blockquote>
+<p>网易面试都是两个面试官，内容也挺硬，我一个问题还没说完下一个问题就来了</p>
+</blockquote>
+<ol>
+<li>项目如何防止短信轰炸<br>第一次听这个词，一脸蒙蔽，直接就回答没做过，后来才知道调用幂等性这回事。</li>
+<li>问单点登录我怎么做的，我说我是通过session和cookie做的，面试官似乎就没太大兴趣了，就过了</li>
+<li>linux中的fork的使用和原理<br>gg</li>
+<li>ping命令的原理<br>继续gg</li>
+<li>https介绍</li>
+<li>https请求下get请求数据会被加密吗？</li>
+<li>ssl连接过程</li>
+<li>ssl是使用对称加密还是非对称加密</li>
+<li>操作系统中的抖动是怎么回事</li>
+<li>操作系统中的缺页中断是怎么回事</li>
+<li>java异常体系<br>这个都没答出来，现在想想这么多问题没答出来还让我进二面了也是很nice了</li>
+<li>mysql隔离级别</li>
+<li>mysql隔离级别下，给了个场景，主要是判断RC和RR下的不同。</li>
+<li>mysql索引原理</li>
+<li>算法：数组中找两个数之和为10，做出来之后继续问3个数呢？</li>
+</ol>
+<p>基础还是不扎实，主要体现在Linux和操作系统，但是比第一次面试还是有了一些进步，这次进入二面了，两位面试官对我的评价是知识有了广度，深度不够，算法题的改进没做出来，面试官看出我遇到问题想放弃，劝我多想一想，我才意识我有这个问题，也是很感谢了。~</p>
+<h3 id="网易二面"><a href="#网易二面" class="headerlink" title="网易二面"></a>网易二面</h3><blockquote>
+<p>这次的面试很奇怪，先是hr给我打电话约第二天下午的面试，并告之面试会持续1个半小时，过了一会儿又打电话告诉我面试提前了，今天晚上，没办法~谁叫找工作的是我呢，后来就感觉明显是面试官不想面我了，把我当备胎了，面试也就走了个流程。</p>
+</blockquote>
+<p>二面没有问任何基础，同样是两位面试官，还是其中一位面试官问问题，主要问我觉得自己符合他们招聘要求的哪一点，然后对他们的招聘需求了解吗。两位面试官一上来还做了个自我介绍，不是介绍部门，而是介绍自己的名字，这是我没遇见过的。然后就开始问我项目，项目分工、项目如何沟通的、代码如何托管的，我说托管在码云上，他们表示没听过。然后就开始疯狂怼我的项目，同样问了短信轰炸这个问题，我在一面后下去查了资料，给他们说完后其中一位面试官就怼我说我没做实际做过，我确实没做过啊。。然后又问我会不会有人知道我们的端口号和IP来攻击系统，我说了一些防护措施，我说的时候那边没声音了。。中间还有大概2分钟的沉默。。然后他们就说没问题了。。过了一会儿就显示面试不过。</p>
+<h2 id="腾讯第二次面试（一面挂）"><a href="#腾讯第二次面试（一面挂）" class="headerlink" title="腾讯第二次面试（一面挂）"></a>腾讯第二次面试（一面挂）</h2><blockquote>
+<p>写到这里的时候突然蘑菇街的offer来了，不过老板只让去排名前十的公司，好悲伤，只能拒掉了~腾讯二面是找的本科的学长内推，可惜又是一轮游。</p>
+</blockquote>
+<ol>
+<li>项目是如何保证生产者实例和消费者实例之间调用的可靠性的<br>我当时猜测可能是想问我分布式事务，用一个协调者协调整个调用过程，可是现在一想我的消费者是直接从注册中心得到生产者地址之后向它发请求的，并不符合分布式事务的场景啊。如果请求失败会返回错误码，前端去判断该显示什么。不知道这样对不对</li>
+<li>如何设计一个springmvc<br>我基本上就按照springmvc的流程谈，回答着就说到了json转对象，这里就给自己挖了一个坑</li>
+<li>json如何转对象的<br>平时我们都是使用阿里巴巴提供的fastjson之类的工具帮我们转的，这里要我自己设计一个优点懵，就说用类似正则表达式之类的设定规则提取键值对。<br>4.nginx负载均衡有哪几种方式？<br>只答出了ip哈希、轮询<br>5.它们的使用场景<br>GG<br>6.如何优化整个项目<br>我说了缓存和连接池，面试结束后面试官还给我扩展了很多，主要是因为我在项目里面提了一些优化的问题。还是太菜，简历上的内容没有完全弄懂<br>7.hashmap的put原理<br>我竟然没提红黑树，当时应该是傻的。<br>还有一些忘了。。</li>
+</ol>
+<blockquote>
+<p>面试官评价：对项目中所使用的组件的原理没有深入了解，基础不够扎实。面试官是腾讯云的，他虽然说自己不会问高并发的东西，但是….</p>
+</blockquote>
+<h2 id="阿里第一次面试（三面挂）"><a href="#阿里第一次面试（三面挂）" class="headerlink" title="阿里第一次面试（三面挂）"></a>阿里第一次面试（三面挂）</h2><blockquote>
+<p>阿里第一次面试是被实验室师兄内推到天猫，只能说选择很重要。</p>
+</blockquote>
+<h3 id="阿里一面"><a href="#阿里一面" class="headerlink" title="阿里一面"></a>阿里一面</h3><ol>
+<li>项目中的难点<br>被怼说使用springcloud没啥用，不如加集群。</li>
+<li>mysql中myisam和innodb有什么区别</li>
+<li>GC分代回收的好处</li>
+<li>G1介绍</li>
+<li>G1为什么采用连续的region</li>
+<li>说下mysql你最了解的<br>我说了mysql的ACID对应的实现</li>
+<li>平时怎么学习的</li>
+<li>实验室做什么的</li>
+<li>自己的优势，向他展现出来<br>懵，说自己擅长找资料。。。。</li>
+<li>论文情况</li>
+<li>有没有博客</li>
+<li>打开了我的github，发现没什么有价值的东西。<br>这一轮问的我异常的尴尬，深深的感觉自己实在是没有什么拿的出手的可以展示的东西。准备秋招的时候一定要准备一些内容，博客+github这一块可以增添点内容。</li>
+</ol>
+<h3 id="阿里二面"><a href="#阿里二面" class="headerlink" title="阿里二面"></a>阿里二面</h3><ol>
+<li>项目中有哪些是是我做的</li>
+<li>介绍下使用场景</li>
+<li>限流和容错了解吗</li>
+<li>项目难点在哪儿</li>
+<li>concurrentashmap介绍下</li>
+<li>线程池介绍下</li>
+<li>数据库索引和数据库事务</li>
+<li>2000万条数据如何作数据库的优化</li>
+</ol>
+<blockquote>
+<p>这一轮面试官没有难为我，愿意被我引导，所以答的过程也很流畅，最后差不多告诉我已经进入下一轮</p>
+</blockquote>
+<h3 id="阿里三面（应该还是二面）"><a href="#阿里三面（应该还是二面）" class="headerlink" title="阿里三面（应该还是二面）"></a>阿里三面（应该还是二面）</h3><blockquote>
+<p>挂在这里了，我犯了几个错，和面试官约时间的时候面试官说当天晚上，由于和百度笔试冲突我提议明天，然后对方很不难烦，以后有这种情况还是不要提其他公司吧。最后的结果就是第二天面试官和我聊的时候能听出火气，我心里本来就虚，发挥极差，然后就挂了。</p>
+</blockquote>
+<ol>
+<li>项目分工，说说项目具体的功能</li>
+<li>项目难点在哪里？<br>被怼了，你的项目难点就是这个吗？这里其实我之前准备了，但是面试的时候全忘了，描述了一个不痛不痒的场景，很后悔，发挥的实在是太差了。主要还是因为前面改时间再加上面试官有点冲，心里发虚。</li>
+<li>项目QPS是多少？<br>我预估了一个值，实际没测过，这是第二个坑</li>
+<li>如果把你的系统给淘宝使用，假设20W的qps，你会在哪个地方做改进？<br>还是虚的很，只说了加集群。缓存、异步、多线程、前端优化、数据库优化只字未提，不挂我挂谁呢。。</li>
+</ol>
+<blockquote>
+<p>20分钟左右就结束了，二面一般不问基础问题，其实我觉得自己本来是很有希望的，问的这些问题我都准备过，这次是败在了心里素质上。面试不仅仅考候选人的技术，也会考察心理等各方面的素养。</p>
+</blockquote>
+<h2 id="蘑菇街（offer）"><a href="#蘑菇街（offer）" class="headerlink" title="蘑菇街（offer）"></a>蘑菇街（offer）</h2><h3 id="蘑菇街一面"><a href="#蘑菇街一面" class="headerlink" title="蘑菇街一面"></a>蘑菇街一面</h3><ol>
+<li>项目，比较常规</li>
+<li>问到了限流和容错<br>我答的不全，细节方面面试官从线程池的拒绝策略开始引导我，后来还是答出来了</li>
+<li>NIO使用过吗？有哪些具体的函数<br>这里就体现出小公司的特点，小公司会需要了解你有没有实际操作过。</li>
+<li>几种IO模型的区别</li>
+<li>nginx如何配置负载均衡<br>还有一些基础，，记不得了<br>算法：滑动窗口求最大值，牛客网的剑指offer专题上有。</li>
+</ol>
+<blockquote>
+<p>总结：面试官很nice、体验很棒。</p>
+</blockquote>
+<h3 id="蘑菇街二面"><a href="#蘑菇街二面" class="headerlink" title="蘑菇街二面"></a>蘑菇街二面</h3><p>完全没问项目</p>
+<ol>
+<li>了解哪几种锁？死锁产生和预防</li>
+<li>sychnorized和lock的区别<br>没答好，回答的不全面</li>
+<li>读写锁的使用场景</li>
+<li>求二叉树的前k大数<br>回答了用堆来做，但是时间复杂度一直说不对。。</li>
+<li>了解分布式吗？说说CAP理论讲的是什么<br>我应该是讲出来了，但是CAP理论是为了什么这里表达的不好。</li>
+</ol>
+<blockquote>
+<p>常规，简单。感谢蘑菇街的offer，让我不至于剃了光头</p>
+</blockquote>
+<h2 id="华为（等待加试中）"><a href="#华为（等待加试中）" class="headerlink" title="华为（等待加试中）"></a>华为（等待加试中）</h2><blockquote>
+<p>华为是现场面试，一面干货十足，二面聊人生。一面就是对我简历上写的技能挨个的问，问到不会为止就换下一个，感觉只要你知道些东西基本上就不会挂你，华为难的是性格测试哈哈~</p>
+</blockquote>
+<h2 id="阿里第二次面试（二面挂-阿里云）"><a href="#阿里第二次面试（二面挂-阿里云）" class="headerlink" title="阿里第二次面试（二面挂/阿里云）"></a>阿里第二次面试（二面挂/阿里云）</h2><blockquote>
+<p>正式批被捞起来面的，而且岗位变成了基础平台研发工程师，这个岗位要比Java后台研发要求更高，基础要很牢靠。</p>
+</blockquote>
+<ol>
+<li>项目介绍</li>
+<li>项目难点</li>
+<li>对我项目中一个细节提问，一下就问住我了。很后悔当时没把项目多看几遍，只要有一点迟疑就会被认为项目细节不够了解。</li>
+<li>问我GC调优的过程</li>
+<li>如何查看进程里面某个线程的情况<br>jstack，一知半解是拿不到offer的</li>
+<li>用栈实现队列</li>
+<li>tcp三次握手</li>
+<li>Java的自动拆装箱</li>
+<li>Java的装箱有什么问题<br>卒</li>
+<li>Mysql问了一个最左前缀索引问题，A/B是否走索引。</li>
+<li>面向对象中的开闭原则是说的什么<br>卒，回答的不够好。</li>
+<li>算法题，反转字符串，优化到Logn。快排，根据快排的思想求无序数组第k大。</li>
+</ol>
+<h2 id="阿里二面-1"><a href="#阿里二面-1" class="headerlink" title="阿里二面"></a>阿里二面</h2><p>卒，不说了</p>
+<blockquote>
+<p>面试官评价：项目经历还是太薄弱（意思是项目没有难点，没有好深挖的地方），原理不深入。让我多思考项目细节和难点。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>半天的时间就把持续了快两个月的春招给总结了，春招的失利对我的打击很深，这一次春招很多地方做的不好，但也收获了一些面试经验。不过也不可避免的留下了面试记录，肯定会对秋招带来影响，后悔什么的都没用，现在要做的是思考如何秋招翻盘。压力只会更大，随之而来的是我的论文、实验室的项目、还有秋招的压力，稍有不慎满盘皆输。此刻的我想送给未来的我一番话，警示自己。</p>
+<h4 id="战略的懒惰是最可怕的，保持思考，保持前进。"><a href="#战略的懒惰是最可怕的，保持思考，保持前进。" class="headerlink" title="- 战略的懒惰是最可怕的，保持思考，保持前进。"></a>- 战略的懒惰是最可怕的，保持思考，保持前进。</h4><h4 id="时时总结，多写博客多总结。"><a href="#时时总结，多写博客多总结。" class="headerlink" title="- 时时总结，多写博客多总结。"></a>- 时时总结，多写博客多总结。</h4><h4 id="到秋招之前必须有个人作品到github"><a href="#到秋招之前必须有个人作品到github" class="headerlink" title="- 到秋招之前必须有个人作品到github"></a>- 到秋招之前必须有个人作品到github</h4><h4 id="永远不要轻视毕业论文，要花时间，要出成果"><a href="#永远不要轻视毕业论文，要花时间，要出成果" class="headerlink" title="- 永远不要轻视毕业论文，要花时间，要出成果"></a>- 永远不要轻视毕业论文，要花时间，要出成果</h4><h4 id="锻炼心理素质和叙事能力。"><a href="#锻炼心理素质和叙事能力。" class="headerlink" title="- 锻炼心理素质和叙事能力。"></a>- 锻炼心理素质和叙事能力。</h4>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/19/GC系列终章/" rel="next" title="GC系列终章">
+                <i class="fa fa-chevron-left"></i> GC系列终章
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#经历了春招，才知道自己有多菜"><span class="nav-number">1.</span> <span class="nav-text">经历了春招，才知道自己有多菜</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#腾讯第一次面试（2月底）"><span class="nav-number">1.1.</span> <span class="nav-text">腾讯第一次面试（2月底）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目"><span class="nav-number">1.1.1.</span> <span class="nav-text">项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础问题"><span class="nav-number">1.1.2.</span> <span class="nav-text">基础问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网易（二面挂）"><span class="nav-number">1.2.</span> <span class="nav-text">网易（二面挂）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网易一面"><span class="nav-number">1.2.1.</span> <span class="nav-text">网易一面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网易二面"><span class="nav-number">1.2.2.</span> <span class="nav-text">网易二面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#腾讯第二次面试（一面挂）"><span class="nav-number">1.3.</span> <span class="nav-text">腾讯第二次面试（一面挂）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿里第一次面试（三面挂）"><span class="nav-number">1.4.</span> <span class="nav-text">阿里第一次面试（三面挂）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#阿里一面"><span class="nav-number">1.4.1.</span> <span class="nav-text">阿里一面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#阿里二面"><span class="nav-number">1.4.2.</span> <span class="nav-text">阿里二面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#阿里三面（应该还是二面）"><span class="nav-number">1.4.3.</span> <span class="nav-text">阿里三面（应该还是二面）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#蘑菇街（offer）"><span class="nav-number">1.5.</span> <span class="nav-text">蘑菇街（offer）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#蘑菇街一面"><span class="nav-number">1.5.1.</span> <span class="nav-text">蘑菇街一面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#蘑菇街二面"><span class="nav-number">1.5.2.</span> <span class="nav-text">蘑菇街二面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#华为（等待加试中）"><span class="nav-number">1.6.</span> <span class="nav-text">华为（等待加试中）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿里第二次面试（二面挂-阿里云）"><span class="nav-number">1.7.</span> <span class="nav-text">阿里第二次面试（二面挂/阿里云）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#阿里二面-1"><span class="nav-number">1.8.</span> <span class="nav-text">阿里二面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.9.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#战略的懒惰是最可怕的，保持思考，保持前进。"><span class="nav-number">1.9.0.1.</span> <span class="nav-text">- 战略的懒惰是最可怕的，保持思考，保持前进。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时时总结，多写博客多总结。"><span class="nav-number">1.9.0.2.</span> <span class="nav-text">- 时时总结，多写博客多总结。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#到秋招之前必须有个人作品到github"><span class="nav-number">1.9.0.3.</span> <span class="nav-text">- 到秋招之前必须有个人作品到github</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#永远不要轻视毕业论文，要花时间，要出成果"><span class="nav-number">1.9.0.4.</span> <span class="nav-text">- 永远不要轻视毕业论文，要花时间，要出成果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#锻炼心理素质和叙事能力。"><span class="nav-number">1.9.0.5.</span> <span class="nav-text">- 锻炼心理素质和叙事能力。</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
