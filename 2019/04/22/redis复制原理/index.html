@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis复制原理">
+<meta property="og:url" content="http://yoursite.com/2019/04/22/redis复制原理/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/uploads/redis复制同步.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploiads/redis新版本PSYNC执行过程.png">
+<meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploads/redis复制身份验证.png">
+<meta property="og:updated_time" content="2019-04-22T12:43:59.793Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="redis复制原理">
+<meta name="twitter:description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
+<meta name="twitter:image" content="http://yoursite.com/uploads/redis复制同步.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/22/redis复制原理/"/>
+
+
+
+
+
+  <title>redis复制原理 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/22/redis复制原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">redis复制原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-22T19:44:25+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="redis复制的原理"><a href="#redis复制的原理" class="headerlink" title="redis复制的原理"></a>redis复制的原理</h1><h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><h4 id="slaveof命令"><a href="#slaveof命令" class="headerlink" title="slaveof命令"></a>slaveof命令</h4><p>被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &gt; SLAVEOF B，A就成了B的从服务器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:3325 &gt; slaveof 127.0.0.1:6430</span><br></pre></td></tr></table></figure></p>
+<h2 id="旧版复制介绍以及缺陷"><a href="#旧版复制介绍以及缺陷" class="headerlink" title="旧版复制介绍以及缺陷"></a>旧版复制介绍以及缺陷</h2><p>Redis的复制功能分为<strong>同步</strong>和<strong>命令传播</strong>,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务器拿到脏数据，主服务器通过这种方式维持数据一致性</p>
+<h4 id="1-同步的过程"><a href="#1-同步的过程" class="headerlink" title="1. 同步的过程"></a>1. 同步的过程</h4><ol>
+<li>从向主发送SYNC命令</li>
+<li>主接收SYNC命令并执行BGSAVE，同时在后台生成一个RDB文件并开启一个缓冲区记录从现在开始执行的所有写命令</li>
+<li>主执行完BGSAVE后得到一个RDB，将这个RDB发送给从服务器，从服务器执行RDB</li>
+<li>主将缓冲区命令发送至从，从执行这些命令。</li>
+</ol>
+<p><img src="/uploads/redis复制同步.png" alt="redis复制同步" title="redis复制同步"></p>
+<h4 id="2-命令传播"><a href="#2-命令传播" class="headerlink" title="2. 命令传播"></a>2. 命令传播</h4><p>主服务器中数据出现了更改，需要保持数据的一致性，于是向从服务器发送命令达到相同的效果。</p>
+<h4 id="3-旧版复制的缺陷"><a href="#3-旧版复制的缺陷" class="headerlink" title="3. 旧版复制的缺陷"></a>3. 旧版复制的缺陷</h4><p>初次复制没有问题，问题出现在主服务器断线重连后出现的问题。注意问题描述：问题出在，旧版本的复制下，在出现断线后又上线的情况中，从服务器为了接收断线期间新的命令，会再发起一次SYNC，此时主服务器会再次将之前所有的命令同步到从，但是从实际上需要的只是断线期间没有接收到的那部分数据，这里造成了极大的资源浪费。因为SYNC是非常耗资源的。</p>
+<h2 id="新版复制所做的改进"><a href="#新版复制所做的改进" class="headerlink" title="新版复制所做的改进"></a>新版复制所做的改进</h2><ol>
+<li>新版复制用PSYNC代替SYNC，PSYNC有完整重同步和部分重同步两种模式</li>
+<li>完整重同步和旧版的同步一样</li>
+<li>部分重同步用于解决旧版复制的缺陷。</li>
+</ol>
+<h3 id="部分重同步过程"><a href="#部分重同步过程" class="headerlink" title="部分重同步过程"></a>部分重同步过程</h3><p>部分重同步在重连后就会将断线期间新生成的命令发给从服务器</p>
+<h3 id="部分重同步的实现"><a href="#部分重同步的实现" class="headerlink" title="部分重同步的实现"></a>部分重同步的实现</h3><p>三个概念：主从服务器的复制偏移量、复制积压缓冲区、服务器的运行ID</p>
+<h4 id="复制偏移量"><a href="#复制偏移量" class="headerlink" title="复制偏移量"></a>复制偏移量</h4><p>主从各有一个， 复制多少，双方的复制偏移量移动多少。</p>
+<h4 id="复制积压缓冲区"><a href="#复制积压缓冲区" class="headerlink" title="复制积压缓冲区"></a>复制积压缓冲区</h4><p>对于断线重连的情况，使用一个固定大小的复制积压缓冲区存储断线期间的写命令，如果说从服务器偏移量之后的命令还存在复制积压缓冲区里面，就使用部分重同步。否则使用完整重同步。</p>
+<h4 id="服务器运行ID"><a href="#服务器运行ID" class="headerlink" title="服务器运行ID"></a>服务器运行ID</h4><p>一台服务器的唯一标识</p>
+<h4 id="新版本复制PSYNC执行过程"><a href="#新版本复制PSYNC执行过程" class="headerlink" title="新版本复制PSYNC执行过程"></a>新版本复制PSYNC执行过程</h4><p><img src="uploiads/redis新版本PSYNC执行过程.png" alt="redis新版本PSYNC执行过程" title="redis新版本PSYNC执行过程"></p>
+<h2 id="复制的原理"><a href="#复制的原理" class="headerlink" title="复制的原理"></a>复制的原理</h2><p>redis服务器之间的复制实际上就是做了一次基于socket套接字的通信过程，具体步骤如下：</p>
+<ol>
+<li>从服务器向主服务器发送slave of命令</li>
+<li>主服务器返回OK后从服务器为此次连接建立套接字，从服务器会专门开启一个线程来接收主服务器传过来的文件和命令。</li>
+<li>建立套接字连接后，从服务器会向主服务器发送ping命令检查联通状态，主服务器返回pong命令表示连接成功，可以开始复制。超时或者返回ERR都视为建立失败。<blockquote>
+<p>为什么建立完套接字还要发一个ping命令，作用1.检查套接字读写状态。作用2.检查主服务器状态是否异常。</p>
+</blockquote>
+</li>
+<li>身份验证。如图<br><img src="uploads/redis复制身份验证.png" alt="redis复制身份验证" title="redis复制身份验证"></li>
+<li>发送端口信息，这个部分主服务会监听从服务器的端口，进行命令传播和同步</li>
+</ol>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对于redis复制，还有几点需要补充的是</p>
+<ol>
+<li>心跳检测是从服务器向主服务器发送命令，每秒一次</li>
+<li>心跳检测可以检测网络状态</li>
+<li>心跳检测可以检测命令是否丢失，原理是通过从服务器发过来的偏移量的值看双方的复制偏移量是否一致，不一致说明有命令丢失的情况。</li>
+<li>心跳检测命令是REPLCONF ACK &lt;副本偏移量&gt;</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/22/经历了春招，才知道自己有多菜/" rel="next" title="经历了春招，才知道自己有多菜">
+                <i class="fa fa-chevron-left"></i> 经历了春招，才知道自己有多菜
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis复制的原理"><span class="nav-number">1.</span> <span class="nav-text">redis复制的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何使用"><span class="nav-number">1.1.</span> <span class="nav-text">如何使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#slaveof命令"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">slaveof命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#旧版复制介绍以及缺陷"><span class="nav-number">1.2.</span> <span class="nav-text">旧版复制介绍以及缺陷</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-同步的过程"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">1. 同步的过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-命令传播"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">2. 命令传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-旧版复制的缺陷"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">3. 旧版复制的缺陷</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新版复制所做的改进"><span class="nav-number">1.3.</span> <span class="nav-text">新版复制所做的改进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部分重同步过程"><span class="nav-number">1.3.1.</span> <span class="nav-text">部分重同步过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部分重同步的实现"><span class="nav-number">1.3.2.</span> <span class="nav-text">部分重同步的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#复制偏移量"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">复制偏移量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#复制积压缓冲区"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">复制积压缓冲区</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器运行ID"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">服务器运行ID</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新版本复制PSYNC执行过程"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">新版本复制PSYNC执行过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制的原理"><span class="nav-number">1.4.</span> <span class="nav-text">复制的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充"><span class="nav-number">1.5.</span> <span class="nav-text">补充</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
