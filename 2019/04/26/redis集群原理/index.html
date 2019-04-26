@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
+<meta name="description" content="java学习点滴">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何设计一个秒杀系统">
-<meta property="og:url" content="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/index.html">
+<meta property="og:title" content="redis集群原理">
+<meta property="og:url" content="http://yoursite.com/2019/04/26/redis集群原理/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
+<meta property="og:description" content="java学习点滴">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/uploads/miaosha.png">
-<meta property="og:updated_time" content="2019-04-18T12:46:40.740Z">
+<meta property="og:updated_time" content="2019-04-26T01:51:56.032Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何设计一个秒杀系统">
-<meta name="twitter:description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
-<meta name="twitter:image" content="http://yoursite.com/uploads/miaosha.png">
+<meta name="twitter:title" content="redis集群原理">
+<meta name="twitter:description" content="java学习点滴">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/04/26/redis集群原理/"/>
 
 
 
 
 
-  <title>如何设计一个秒杀系统 | 一个杯子</title>
+  <title>redis集群原理 | 一个杯子</title>
   
 
 
@@ -245,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/26/redis集群原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -262,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何设计一个秒杀系统</h1>
+          <h1 class="post-title" itemprop="name headline">redis集群原理</h1>
         
 
         <div class="post-meta">
@@ -274,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-18T20:05:02+08:00">
-                2019-04-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-26T09:51:14+08:00">
+                2019-04-26
               </time>
             
 
@@ -284,28 +282,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/大型网站技术架构/" itemprop="url" rel="index">
-                    <span itemprop="name">大型网站技术架构</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -334,39 +310,7 @@
       
 
       
-        <h1 id="如何设计一个秒杀系统"><a href="#如何设计一个秒杀系统" class="headerlink" title="如何设计一个秒杀系统"></a>如何设计一个秒杀系统</h1><blockquote>
-<p>本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。</p>
-</blockquote>
-<h2 id="1-设计难点"><a href="#1-设计难点" class="headerlink" title="1. 设计难点"></a>1. 设计难点</h2><ol>
-<li>秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。</li>
-<li>参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。</li>
-<li>突然增加的网络和带宽，为了避免出现网络拥塞的情况，需要临时租借网络带宽。</li>
-<li>为了防止用户越过秒杀页面，用其他的手段获取下单URL，应该将URL做成动态生成的，在秒杀那一刻出现。</li>
-</ol>
-<h2 id="2-应对策略"><a href="#2-应对策略" class="headerlink" title="2. 应对策略"></a>2. 应对策略</h2><ol>
-<li>秒杀系统独立部署，一主一备提高高可用。</li>
-<li>租用CDN服务器，将秒杀商品页面缓存在CDN上。</li>
-<li>秒杀商品页面静态化，页面尽量精简，最好只有一个秒杀按钮存在，其他内容静态化。</li>
-<li>动态生成随机URL。具体来说就说用一台服务器生成随机数加入URL，在秒杀到点时生成。</li>
-</ol>
-<h2 id="3-架构设计"><a href="#3-架构设计" class="headerlink" title="3. 架构设计"></a>3. 架构设计</h2><p>整体架构设计如下：<br><img src="/uploads/miaosha.png" alt="秒杀系统架构设计" title="秒杀系统架构设计"></p>
-<ol>
-<li>用keepalive保证网关的高可用，防止反向代理服务器挂掉。</li>
-<li>秒杀服务器集群化，支持高可用。</li>
-<li>CDN缓存静态资源。</li>
-<li>应用缓存减少数据库压力。</li>
-<li>数据库读写分离，多台机器用来读，其余用来写。</li>
-</ol>
-<p>还需要注意的问题：对于来自同一个IP的调用应该保证幂等性，只处理秒杀时刻的一次请求，可以有效的防止秒杀软件模拟人的操作。此外页面上的按钮到点之后只能提交一次，无法重复提交。</p>
-<h2 id="4-业务流程"><a href="#4-业务流程" class="headerlink" title="4. 业务流程"></a>4. 业务流程</h2><ol>
-<li>用户下单</li>
-<li>进入缓存队列</li>
-<li>订单服务轮询缓存取前K个用户发送订单页面</li>
-<li>用户付款成功则调用库存服务减库存</li>
-<li>用户放弃支付给订单模块一个反馈，订单模块再次从缓存队列中消费任务。</li>
-<li>继续返回第4步</li>
-</ol>
-
+        
       
     </div>
     
@@ -390,8 +334,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/17/redo日志和undo日志/" rel="next" title="redo日志和undo日志">
-                <i class="fa fa-chevron-left"></i> redo日志和undo日志
+              <a href="/2019/04/26/redis集群分片/" rel="next" title="redis集群原理">
+                <i class="fa fa-chevron-left"></i> redis集群原理
               </a>
             
           </div>
@@ -399,10 +343,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/18/CMS收集器详解/" rel="prev" title="CMS收集器详解">
-                CMS收集器详解 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -454,17 +394,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -519,22 +450,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何设计一个秒杀系统"><span class="nav-number">1.</span> <span class="nav-text">如何设计一个秒杀系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-设计难点"><span class="nav-number">1.1.</span> <span class="nav-text">1. 设计难点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-应对策略"><span class="nav-number">1.2.</span> <span class="nav-text">2. 应对策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-架构设计"><span class="nav-number">1.3.</span> <span class="nav-text">3. 架构设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-业务流程"><span class="nav-number">1.4.</span> <span class="nav-text">4. 业务流程</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

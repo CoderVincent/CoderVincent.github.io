@@ -88,9 +88,9 @@
 <meta property="og:description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/redis复制同步.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploiads/redis新版本PSYNC执行过程.png">
-<meta property="og:image" content="http://yoursite.com/2019/04/22/redis复制原理/uploads/redis复制身份验证.png">
-<meta property="og:updated_time" content="2019-04-22T12:48:01.170Z">
+<meta property="og:image" content="http://yoursite.com/uploads/redis新版本PSYNC执行过程.png">
+<meta property="og:image" content="http://yoursite.com/uploads/redis复制身份验证.png">
+<meta property="og:updated_time" content="2019-04-22T12:54:24.823Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis复制原理">
 <meta name="twitter:description" content="redis复制的原理如何使用slaveof命令被复制的服务器叫做主服务器，复制的服务器叫做从服务器，A &amp;gt; SLAVEOF B，A就成了B的从服务器。1127.0.0.1:3325 &amp;gt; slaveof 127.0.0.1:6430 旧版复制介绍以及缺陷Redis的复制功能分为同步和命令传播,同步用于将从服务器所属的数据库状态更新为从服务器所属的数据库状态，命令传播作用于主服务器，从服务">
@@ -357,7 +357,7 @@
 <h4 id="复制偏移量"><a href="#复制偏移量" class="headerlink" title="复制偏移量"></a>复制偏移量</h4><p>主从各有一个， 复制多少，双方的复制偏移量移动多少。</p>
 <h4 id="复制积压缓冲区"><a href="#复制积压缓冲区" class="headerlink" title="复制积压缓冲区"></a>复制积压缓冲区</h4><p>对于断线重连的情况，使用一个固定大小的复制积压缓冲区存储断线期间的写命令，如果说从服务器偏移量之后的命令还存在复制积压缓冲区里面，就使用部分重同步。否则使用完整重同步。</p>
 <h4 id="服务器运行ID"><a href="#服务器运行ID" class="headerlink" title="服务器运行ID"></a>服务器运行ID</h4><p>一台服务器的唯一标识</p>
-<h4 id="新版本复制PSYNC执行过程"><a href="#新版本复制PSYNC执行过程" class="headerlink" title="新版本复制PSYNC执行过程"></a>新版本复制PSYNC执行过程</h4><p><img src="uploiads/redis新版本PSYNC执行过程.png" alt="redis新版本PSYNC执行过程" title="redis新版本PSYNC执行过程"></p>
+<h4 id="新版本复制PSYNC执行过程"><a href="#新版本复制PSYNC执行过程" class="headerlink" title="新版本复制PSYNC执行过程"></a>新版本复制PSYNC执行过程</h4><p><img src="/uploads/redis新版本PSYNC执行过程.png" alt="redis新版本PSYNC执行过程" title="redis新版本PSYNC执行过程"></p>
 <h2 id="复制的原理"><a href="#复制的原理" class="headerlink" title="复制的原理"></a>复制的原理</h2><p>redis服务器之间的复制实际上就是做了一次基于socket套接字的通信过程，具体步骤如下：</p>
 <ol>
 <li>从服务器向主服务器发送slave of命令</li>
@@ -366,7 +366,7 @@
 <p>为什么建立完套接字还要发一个ping命令，作用1.检查套接字读写状态。作用2.检查主服务器状态是否异常。</p>
 </blockquote>
 </li>
-<li>身份验证。如图<br><img src="uploads/redis复制身份验证.png" alt="redis复制身份验证" title="redis复制身份验证.png"></li>
+<li>身份验证。如图<br><img src="/uploads/redis复制身份验证.png" alt="redis复制身份验证" title="redis复制身份验证.png"></li>
 <li>发送端口信息，这个部分主服务会监听从服务器的端口，进行命令传播和同步</li>
 </ol>
 <h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>对于redis复制，还有几点需要补充的是</p>
@@ -409,6 +409,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/26/redis集群分片/" rel="prev" title="redis集群原理">
+                redis集群原理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -489,7 +493,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
