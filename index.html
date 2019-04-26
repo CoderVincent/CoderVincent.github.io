@@ -285,131 +285,27 @@
           </span>
 
           
-
-          
+            <span class="post-category" >
             
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          
-          
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/04/26/redis集群原理/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/26/redis集群分片/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="张澧枫">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/1.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一个杯子">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/26/redis集群分片/" itemprop="url">redis集群原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+              <span class="post-meta-divider">|</span>
             
               <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
+                <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">分类于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-26T09:51:14+08:00">
-                2019-04-26
-              </time>
-            
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
 
-            
-
-            
-          </span>
-
+                
+                
+              
+            </span>
           
 
           
@@ -447,7 +343,7 @@
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/04/26/redis集群分片/#more" rel="contents">
+            <a class="btn" href="/2019/04/26/redis集群原理/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1630,6 +1526,158 @@ RDB实际使用
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/15/redis如何实现分布式锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/15/redis如何实现分布式锁/" itemprop="url">redis如何实现分布式锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-15T20:54:49+08:00">
+                2019-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          redis实现分布式锁
+最近面试，被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。
+
+1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。
+2. 版本2加锁+设置超时时
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/15/redis如何实现分布式锁/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1684,7 +1732,7 @@ RDB实际使用
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
