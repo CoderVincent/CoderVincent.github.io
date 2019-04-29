@@ -93,7 +93,8 @@
 <meta property="og:image" content="http://yoursite.com/uploads/redis-槽指派.png">
 <meta property="og:image" content="http://yoursite.com/uploads/redis信息槽节点传播.png">
 <meta property="og:image" content="http://yoursite.com/uploads/redis执行命令.png">
-<meta property="og:updated_time" content="2019-04-26T03:28:13.474Z">
+<meta property="og:image" content="http://yoursite.com/uploads/ask错误.png">
+<meta property="og:updated_time" content="2019-04-29T02:48:16.188Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis集群原理">
 <meta name="twitter:description" content="redis集群原理 本文部分图片和文字来源于：https://www.jianshu.com/p/0232236688c1  摘要redis集群是redis官方提供的分布式缓存方案，通过分片实现数据的集群化，对于redis集群我们需要关注这样几个方面，节点连接、槽指派、命令执行过程、重新分片、转向、故障检测、故障转移、消息通信等。在学习完之后至少需要知道这样几个问题：  一个集群是如何将一台red">
@@ -349,7 +350,7 @@
 <li>槽指派的过程是怎样的？</li>
 <li>来自客户端的命令请求是怎样被集群处理的？</li>
 <li>moved错误和ASK错误是什么？有什么区别</li>
-<li>redis集群某个结点故障如何进行故障转移</li>
+<li>redis集群某个结点发生故障如何进行故障转移</li>
 <li>如何进行故障检测？</li>
 <li>主服务器挂掉后新的主节点的选举过程是怎样的？</li>
 <li>集群中的消息通信手段（命令）</li>
@@ -537,7 +538,33 @@ typedef struct clusterState {
 <li>moved错误是怎么回事</li>
 </ol>
 </blockquote>
-<h2 id="5"><a href="#5" class="headerlink" title="5."></a>5.</h2>
+<h2 id="5-moved错误和ask错误有什么区别"><a href="#5-moved错误和ask错误有什么区别" class="headerlink" title="5. moved错误和ask错误有什么区别"></a>5. moved错误和ask错误有什么区别</h2><p>moved错误是一个转向的命令，在当前节点检查完自己的ckusterNode后发现自己不处理这个槽就会出现一个moved错误可以定位到处理这个槽的节点上去。</p>
+<p>ask错误是在重新分片阶段，可能会出现的一种情况：属于被迁移槽的一部分键值对保存在源节点里面，而另一部分键值对则保存在目标节点里面。<br><img src="/uploads/ask错误.png" alt="ask错误" title="ask错误"></p>
+<h2 id="6-redis集群中某个结点发生故障如何进行故障转移"><a href="#6-redis集群中某个结点发生故障如何进行故障转移" class="headerlink" title="6. redis集群中某个结点发生故障如何进行故障转移"></a>6. redis集群中某个结点发生故障如何进行故障转移</h2><p>为了保证集群的可用性，在搭建过程中一个节点往往都是一主一备甚至一主多备的模式，一旦某个主节点下线，其他几个从结点就会接管主节点的任务，通过选举算法选出一个新的主节点出来，后上线的主节点会变成新的主节点的从节点。</p>
+<h3 id="设置从节点"><a href="#设置从节点" class="headerlink" title="设置从节点"></a>设置从节点</h3><h4 id="命令：cluster-replicate-node-id"><a href="#命令：cluster-replicate-node-id" class="headerlink" title="命令：cluster replicate node_id"></a>命令：cluster replicate node_id</h4><p>向一个node_id发送命令，可以成为这个node_id的从节点</p>
+<h4 id="过程："><a href="#过程：" class="headerlink" title="过程："></a>过程：</h4><ol>
+<li>发送这个命令的节点会首先在自己的clusterState.nodes字典中找到node_id所对应节点的，然后将自己的clusterState.myself.slaveof指针指向这个结构，成为这个node_id节点的从节点</li>
+<li>该节点修改clusterState.myself.flags中的属性为redis_node_slave</li>
+<li>从节点开启复制功能，向主节点复制。于此同时，集群中的其他节点也会接收这个消息。</li>
+</ol>
+<h3 id="故障检测"><a href="#故障检测" class="headerlink" title="故障检测"></a>故障检测</h3><h4 id="过程：-1"><a href="#过程：-1" class="headerlink" title="过程："></a>过程：</h4><ol>
+<li>节点A向节点B发送ping命令，如果没有收到节点B返回的pong命令，就会将这个节点标记为疑似下线的状态。</li>
+<li>当一个主节点A通过消息得知主节点B认为主节点C进入疑似下线状态后，自己也会把这个节点标记为下线状态。</li>
+<li>如果在一个集群里，半数以上的主节点都将主节点B标记为下线状态，那么就会将这个节点标记为已下线状态并在集群广播这条消息</li>
+</ol>
+<h3 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h3><h4 id="过程：-2"><a href="#过程：-2" class="headerlink" title="过程："></a>过程：</h4><ol>
+<li>从节点中的一个节点会成为一个新的主节点</li>
+<li>新的主节点会撤销对所有已下线主节点的槽指派并转向自己</li>
+<li>发广播</li>
+</ol>
+<h3 id="新的主节点选举过程"><a href="#新的主节点选举过程" class="headerlink" title="新的主节点选举过程"></a>新的主节点选举过程</h3><ol>
+<li>集群中有一个配置纪元，本职是一个计数器，每当有一次故障转移发生，计数器就加1</li>
+<li>对于每个配置纪元内，集群中每个负责处理槽的主节点都有一次投票的机会，第一个到达的从节点将获得该主节点的投票。</li>
+<li>当节点发现自己正在复制的主节点下线时，从节点会向集群广播一条消息，要求所有的主节点给他投票，但是这些主节点只有一票，只有谁先到就给谁。</li>
+<li>最后统计如果一个从节点的票数大于N/2+1（N是具有投票权的主节点个数），那么这个从节点称为新的主节点</li>
+<li>如果当前的配置纪元没有选举出一个新的节点，那么进入一个新的配置纪元，并再次选举，知道选出新的主节点为止。</li>
+</ol>
+
       
     </div>
     
@@ -696,7 +723,7 @@ typedef struct clusterState {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis集群原理"><span class="nav-number">1.</span> <span class="nav-text">redis集群原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-一个集群是如何将一台redis服务器加入到自己的集群的？"><span class="nav-number">1.2.</span> <span class="nav-text">1.  一个集群是如何将一台redis服务器加入到自己的集群的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-集群使用了什么样的数据结构保存节点之间的状态信息？"><span class="nav-number">1.3.</span> <span class="nav-text">2. 集群使用了什么样的数据结构保存节点之间的状态信息？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clusterNode"><span class="nav-number">1.3.1.</span> <span class="nav-text">clusterNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clusterStates"><span class="nav-number">1.3.2.</span> <span class="nav-text">clusterStates</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-槽指派的过程是什么样的？"><span class="nav-number">1.4.</span> <span class="nav-text">3. 槽指派的过程是什么样的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是槽"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">什么是槽</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#记录节点的槽指派信息"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">记录节点的槽指派信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#传播节点的槽指派信息"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">传播节点的槽指派信息</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-来自客户端的命令请求是怎样被集群处理的"><span class="nav-number">1.5.</span> <span class="nav-text">4. 来自客户端的命令请求是怎样被集群处理的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5"><span class="nav-number">1.6.</span> <span class="nav-text">5.</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis集群原理"><span class="nav-number">1.</span> <span class="nav-text">redis集群原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-一个集群是如何将一台redis服务器加入到自己的集群的？"><span class="nav-number">1.2.</span> <span class="nav-text">1.  一个集群是如何将一台redis服务器加入到自己的集群的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-集群使用了什么样的数据结构保存节点之间的状态信息？"><span class="nav-number">1.3.</span> <span class="nav-text">2. 集群使用了什么样的数据结构保存节点之间的状态信息？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clusterNode"><span class="nav-number">1.3.1.</span> <span class="nav-text">clusterNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clusterStates"><span class="nav-number">1.3.2.</span> <span class="nav-text">clusterStates</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-槽指派的过程是什么样的？"><span class="nav-number">1.4.</span> <span class="nav-text">3. 槽指派的过程是什么样的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是槽"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">什么是槽</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#记录节点的槽指派信息"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">记录节点的槽指派信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#传播节点的槽指派信息"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">传播节点的槽指派信息</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-来自客户端的命令请求是怎样被集群处理的"><span class="nav-number">1.5.</span> <span class="nav-text">4. 来自客户端的命令请求是怎样被集群处理的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-moved错误和ask错误有什么区别"><span class="nav-number">1.6.</span> <span class="nav-text">5. moved错误和ask错误有什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-redis集群中某个结点发生故障如何进行故障转移"><span class="nav-number">1.7.</span> <span class="nav-text">6. redis集群中某个结点发生故障如何进行故障转移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置从节点"><span class="nav-number">1.7.1.</span> <span class="nav-text">设置从节点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#命令：cluster-replicate-node-id"><span class="nav-number">1.7.1.1.</span> <span class="nav-text">命令：cluster replicate node_id</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过程："><span class="nav-number">1.7.1.2.</span> <span class="nav-text">过程：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#故障检测"><span class="nav-number">1.7.2.</span> <span class="nav-text">故障检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#过程：-1"><span class="nav-number">1.7.2.1.</span> <span class="nav-text">过程：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#故障转移"><span class="nav-number">1.7.3.</span> <span class="nav-text">故障转移</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#过程：-2"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">过程：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新的主节点选举过程"><span class="nav-number">1.7.4.</span> <span class="nav-text">新的主节点选举过程</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
