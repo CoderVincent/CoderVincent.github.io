@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在项目中使用消息队列以提高QPS的方案探究目标：提高短信平台项目QPS方案概要：使用阿里巴巴开源的rocketmq消息队列对平台做一次异步改造，目前短信平台项目发送短信的过程是同步的，即前端发送请求需要等待后台处理完并返回结果才结束一次完整的调用，但是后台返回的结果前端并没有做相应的处理，整个消息发送过程的可靠性由后台保证。用户在前台提交完结果后若想知道发送是否成功目前唯一的做法是去短信发送记录中">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在项目中使用消息队列以提高QPS的方案探究">
+<meta property="og:url" content="http://yoursite.com/2019/05/18/在项目中使用消息队列以提高QPS的方案探究/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="在项目中使用消息队列以提高QPS的方案探究目标：提高短信平台项目QPS方案概要：使用阿里巴巴开源的rocketmq消息队列对平台做一次异步改造，目前短信平台项目发送短信的过程是同步的，即前端发送请求需要等待后台处理完并返回结果才结束一次完整的调用，但是后台返回的结果前端并没有做相应的处理，整个消息发送过程的可靠性由后台保证。用户在前台提交完结果后若想知道发送是否成功目前唯一的做法是去短信发送记录中">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟500个用户/聚合数据.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟500个用户/图形结果.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟750个用户/聚合数据.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟750个用户/图形结果.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟1000个用户/聚合数据.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟1000个用户/图形结果.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信压测结果（mq）/模拟500个用户/聚合数据.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信压测结果（mq）/模拟500个用户/图形结果.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信压测结果（mq）/模拟750个用户/聚合数据.png">
+<meta property="og:image" content="http://yoursite.com/uploads/短信压测结果（mq）/模拟750个用户/图形结果.png">
+<meta property="og:updated_time" content="2019-05-18T10:03:16.678Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在项目中使用消息队列以提高QPS的方案探究">
+<meta name="twitter:description" content="在项目中使用消息队列以提高QPS的方案探究目标：提高短信平台项目QPS方案概要：使用阿里巴巴开源的rocketmq消息队列对平台做一次异步改造，目前短信平台项目发送短信的过程是同步的，即前端发送请求需要等待后台处理完并返回结果才结束一次完整的调用，但是后台返回的结果前端并没有做相应的处理，整个消息发送过程的可靠性由后台保证。用户在前台提交完结果后若想知道发送是否成功目前唯一的做法是去短信发送记录中">
+<meta name="twitter:image" content="http://yoursite.com/uploads/短信接口压测结果/模拟500个用户/聚合数据.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/18/在项目中使用消息队列以提高QPS的方案探究/"/>
+
+
+
+
+
+  <title>在项目中使用消息队列以提高QPS的方案探究 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/18/在项目中使用消息队列以提高QPS的方案探究/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">在项目中使用消息队列以提高QPS的方案探究</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-18T15:55:43+08:00">
+                2019-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/搬砖日常/" itemprop="url" rel="index">
+                    <span itemprop="name">搬砖日常</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="在项目中使用消息队列以提高QPS的方案探究"><a href="#在项目中使用消息队列以提高QPS的方案探究" class="headerlink" title="在项目中使用消息队列以提高QPS的方案探究"></a>在项目中使用消息队列以提高QPS的方案探究</h1><p>目标：提高短信平台项目QPS<br>方案概要：使用阿里巴巴开源的rocketmq消息队列对平台做一次异步改造，目前短信平台项目发送短信的过程是同步的，即前端发送请求需要等待后台处理完并返回结果才结束一次完整的调用，但是后台返回的结果前端并没有做相应的处理，整个消息发送过程的可靠性由后台保证。用户在前台提交完结果后若想知道发送是否成功目前唯一的做法是去短信发送记录中查看自己当天发送短信的记录。所以这里可以将提交的请求放入消息队列后收到入队成功的消息就返回到前端，后面的请求交由对应的短信发送服务去消息队列当中拉取。</p>
+<h1 id="改造效果对比"><a href="#改造效果对比" class="headerlink" title="改造效果对比"></a>改造效果对比</h1><h2 id="一-改造前压测情况"><a href="#一-改造前压测情况" class="headerlink" title="一. 改造前压测情况"></a>一. 改造前压测情况</h2><p>为了后面加入mq后有一个对照效果，我对短信发送接口做了一个初始压测，使用了Jmeter压测工具完成整个压测过程。具体步骤如下：</p>
+<ol>
+<li>借助同学写的一个模拟用户数据生成的脚本随机生成500/750/1000条用户数据。</li>
+<li>开500/750/1000个线程模拟500/750/1000个用户发请求，记录各自的聚合数据和图形结果。</li>
+<li>对比加入mq后的测试结果。</li>
+</ol>
+<h3 id="模拟500个用户同时发短信"><a href="#模拟500个用户同时发短信" class="headerlink" title="模拟500个用户同时发短信"></a>模拟500个用户同时发短信</h3><p><img src="/uploads/短信接口压测结果/模拟500个用户/聚合数据.png" alt="聚合数据" title="聚合数据"></p>
+<p><img src="/uploads/短信接口压测结果/模拟500个用户/图形结果.png" alt="图形结果" title="图形结果&quot; &quot;图形结果"></p>
+<h3 id="模拟750个用户同时发短信"><a href="#模拟750个用户同时发短信" class="headerlink" title="模拟750个用户同时发短信"></a>模拟750个用户同时发短信</h3><p><img src="/uploads/短信接口压测结果/模拟750个用户/聚合数据.png" alt="聚合数据" title="聚合数据"></p>
+<p><img src="/uploads/短信接口压测结果/模拟750个用户/图形结果.png" alt="图形结果" title="图形结果&quot; &quot;图形结果"></p>
+<h3 id="模拟1000个用户同时发短信"><a href="#模拟1000个用户同时发短信" class="headerlink" title="模拟1000个用户同时发短信"></a>模拟1000个用户同时发短信</h3><p><img src="/uploads/短信接口压测结果/模拟1000个用户/聚合数据.png" alt="聚合数据" title="聚合数据"></p>
+<p><img src="/uploads/短信接口压测结果/模拟1000个用户/图形结果.png" alt="图形结果" title="图形结果&quot; &quot;图形结果"></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><ol>
+<li>500个并发请求下系统正常工作，qps为51.3。</li>
+<li>750个并发请求下异常提高，qps下降，察看结果树表明有一些请求连接被重置，以及出现超时的情况。</li>
+<li>1000个请求异常率攀升。偏离指数上升，吞吐量下降。</li>
+<li>检查原因发现出现异常的原因在于MongoDB，本文主要探讨mq对qps提升的影响，所以对比的时候只对比500个并发下qps到底能提升多少。</li>
+</ol>
+<h2 id="二-改造后压测情况"><a href="#二-改造后压测情况" class="headerlink" title="二. 改造后压测情况"></a>二. 改造后压测情况</h2><h3 id="模拟500个用户同时发短信-1"><a href="#模拟500个用户同时发短信-1" class="headerlink" title="模拟500个用户同时发短信"></a>模拟500个用户同时发短信</h3><p><img src="/uploads/短信压测结果（mq）/模拟500个用户/聚合数据.png" alt="聚合数据" title="聚合数据"></p>
+<p><img src="/uploads/短信压测结果（mq）/模拟500个用户/图形结果.png" alt="图形结果" title="图形结果"></p>
+<h3 id="模拟750个用户同时发短信-1"><a href="#模拟750个用户同时发短信-1" class="headerlink" title="模拟750个用户同时发短信"></a>模拟750个用户同时发短信</h3><p><img src="/uploads/短信压测结果（mq）/模拟750个用户/聚合数据.png" alt="聚合数据" title="聚合数据"></p>
+<p><img src="/uploads/短信压测结果（mq）/模拟750个用户/图形结果.png" alt="图形结果" title="图形结果"></p>
+<p>可以看到500个用户发请求，qps提高到135，提高了约1.5倍</p>
+<h1 id="改造过程"><a href="#改造过程" class="headerlink" title="改造过程"></a>改造过程</h1><h2 id="springboot使用rocketmq"><a href="#springboot使用rocketmq" class="headerlink" title="springboot使用rocketmq"></a>springboot使用rocketmq</h2><p>之前已经在服务器上安装好了一个Docker版单机Rocketmq，所以这里直接使用就好了</p>
+<h4 id="1-在pom文件中引入相关jar包"><a href="#1-在pom文件中引入相关jar包" class="headerlink" title="1. 在pom文件中引入相关jar包"></a>1. 在pom文件中引入相关jar包</h4><pre><code>&lt;dependency&gt;
+            &lt;groupId&gt;org.apache.rocketmq&lt;/groupId&gt;
+            &lt;artifactId&gt;rocketmq-client&lt;/artifactId&gt;
+            &lt;version&gt;4.2.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><h4 id="2-配置Producer为bean"><a href="#2-配置Producer为bean" class="headerlink" title="2. 配置Producer为bean"></a>2. 配置Producer为bean</h4><pre><code>public class Producer {
+
+    private Logger logger = LoggerFactory.getLogger(Producer.class);
+
+    private String producerGroupName;
+
+    private String nameServerAddr;
+
+    private DefaultMQProducer producer;
+
+    public Producer(String producerGroupName, String nameServerAddr){
+        this.producerGroupName = producerGroupName;
+        this.nameServerAddr = nameServerAddr;
+    }
+
+    /**
+     * 消息生产者初始化
+     * @throws MQClientException
+     */
+    public void init() throws MQClientException {
+        logger.info(&quot;开始启动消息生产者服务...&quot;);
+
+        //创建生产者
+        producer = new DefaultMQProducer(producerGroupName);
+
+        //设置名字服务器
+        producer.setNamesrvAddr(nameServerAddr);
+
+        //启动生产者
+        producer.start();
+
+        //设置异步失败重发次数
+        producer.setRetryTimesWhenSendAsyncFailed(1);
+        logger.info(&quot;消息生产者服务启动成功.&quot;);
+    }
+
+    public void destory(){
+        logger.info(&quot;开始关闭消息生产者服务...&quot;);
+
+        producer.shutdown();
+
+        logger.info(&quot;消息生产者服务已关闭.&quot;);
+    }
+
+    public DefaultMQProducer getProducer() {
+        return producer;
+    }
+
+}
+</code></pre><h4 id="3-注册producer"><a href="#3-注册producer" class="headerlink" title="3. 注册producer"></a>3. 注册producer</h4><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+           xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+        &lt;bean id=&quot;producer&quot; class=&quot;cn.bookcycle.consumer.messagequeue.Producer&quot; init-method=&quot;init&quot; destroy-method=&quot;destory&quot;&gt;
+            &lt;constructor-arg index=&quot;0&quot; value=&quot;smssend&quot;/&gt;
+            &lt;constructor-arg index=&quot;1&quot; value=&quot;${rocketmq.nameServerAddr}&quot;/&gt;
+        &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre><h4 id="4-配置consumer为bean"><a href="#4-配置consumer为bean" class="headerlink" title="4. 配置consumer为bean"></a>4. 配置consumer为bean</h4><pre><code>public class Consumer {
+
+    private Logger logger = LoggerFactory.getLogger(Consumer.class);
+
+    private String consumerGroupName;
+
+    private String nameServerAddr;
+
+    private String topicName;
+
+    private DefaultMQPushConsumer consumer;
+
+    private MessageListenerConcurrently messageListener;
+
+    public Consumer(String consumerGroupName, String nameServerAddr, String topicName, MessageListenerConcurrently messageListener){
+        this.consumerGroupName = consumerGroupName;
+        this.nameServerAddr = nameServerAddr;
+        this.topicName = topicName;
+        this.messageListener = messageListener;
+    }
+
+    public void init() throws Exception{
+        logger.info(&quot;开始启动消费者服务&quot;);
+        //创建一个消息消费者，并设置一个消息消费者组
+        consumer = new DefaultMQPushConsumer(consumerGroupName);
+        //指定 NameServer 地址
+        consumer.setNamesrvAddr(nameServerAddr);
+        //设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        //订阅指定 Topic 下的所有消息
+        consumer.subscribe(topicName, &quot;*&quot;);
+        //注册消息监听器
+        consumer.registerMessageListener(messageListener);
+        // 消费者对象在使用之前必须要调用 start 初始化
+        consumer.start();
+        logger.info(&quot;消息消费者服务启动成功.&quot;);
+    }
+
+
+    public void destroy(){
+        logger.info(&quot;开始关闭消息消费者服务...&quot;);
+
+        consumer.shutdown();
+
+        logger.info(&quot;消息消费者服务已关闭.&quot;);
+    }
+
+    public DefaultMQPushConsumer getConsumer() {
+        return consumer;
+    }
+
+}
+</code></pre><h4 id="5-注册consumer"><a href="#5-注册consumer" class="headerlink" title="5. 注册consumer"></a>5. 注册consumer</h4><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+
+    &lt;bean id=&quot;producer&quot; class=&quot;cn.bookcycle.consumer.messagequeue.Producer&quot; init-method=&quot;init&quot; destroy-method=&quot;destory&quot;&gt;
+        &lt;constructor-arg index=&quot;0&quot; value=&quot;smssend&quot;/&gt;
+        &lt;constructor-arg index=&quot;1&quot; value=&quot;${rocketmq.nameServerAddr}&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;consumer&quot; class=&quot;cn.bookcycle.consumer.messagequeue.Consumer&quot; init-method=&quot;init&quot; destroy-method=&quot;destroy&quot;&gt;
+        &lt;constructor-arg index=&quot;0&quot; value=&quot;smssend&quot;/&gt;
+        &lt;constructor-arg index=&quot;1&quot; value=&quot;${rocketmq.nameServerAddr}&quot;/&gt;
+        &lt;constructor-arg index=&quot;2&quot; value=&quot;sms&quot;/&gt;
+        &lt;constructor-arg index=&quot;3&quot; ref=&quot;messageListener&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;bean id=&quot;messageListener&quot; class=&quot;cn.bookcycle.consumer.messagequeue.MessageListener&quot; /&gt;
+&lt;/beans&gt;
+</code></pre><h4 id="6-配置消息监听器MessageListener"><a href="#6-配置消息监听器MessageListener" class="headerlink" title="6. 配置消息监听器MessageListener"></a>6. 配置消息监听器MessageListener</h4><p>监听到消息后将消息发往处理消息的服务,服务根据自己的能力从队列中取消息出来消费。</p>
+<pre><code>public class MessageListener implements MessageListenerConcurrently {
+
+    private Logger logger = LoggerFactory.getLogger(MessageListener.class);
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Override
+    public ConsumeConcurrentlyStatus consumeMessage(List&lt;MessageExt&gt; list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+        if (list != null){
+            for (MessageExt messageExt : list){
+                try {
+                    String newMessage = new String(messageExt.getBody(),&quot;utf-8&quot;);
+                    logger.info(&quot;监听到消息&quot; + newMessage);
+                    logger.info(&quot;将消息发往真正的消息处理者&quot; + newMessage);
+
+                    //向真正的消息处理者发送消息请求
+                    String result = restTemplate.postForObject(&quot;http://sms-service/sms&quot;, newMessage, String.class);
+                    logger.info(&quot;收到消息的处理结果&quot; + result);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+    }
+}
+</code></pre><h4 id="7-网关接口改造"><a href="#7-网关接口改造" class="headerlink" title="7.  网关接口改造"></a>7.  网关接口改造</h4><pre><code>//原网关接口需要接收到消息后会立即向消息的真正消费者发起请求调用
+@RequestMapping(value = &quot;/sms&quot;, method = RequestMethod.POST)
+public String smsConsumer(@RequestBody (required=false) String requestBody) {
+    return restTemplate.postForObject(&quot;http://sms-service/idtfcode&quot;, requestBody, String.class);
+}
+
+//改造之后的网关会把请求入队列，等待消费者自己去拉取消息消费。
+@RequestMapping(value = &quot;/sms&quot;, method = RequestMethod.POST)
+public String smsConsumer(@RequestBody (required=false) String requestBody) throws Exception {
+    //生产消息并返回入队结果
+    return messageService.produceMsg(requestBody);
+}
+</code></pre><h5 id="以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。"><a href="#以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。" class="headerlink" title="以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。"></a>以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。</h5><h3 id="改造过程中遇到的问题"><a href="#改造过程中遇到的问题" class="headerlink" title="改造过程中遇到的问题"></a>改造过程中遇到的问题</h3><h5 id="1-单元测试中Producer注入失败"><a href="#1-单元测试中Producer注入失败" class="headerlink" title="1. 单元测试中Producer注入失败"></a>1. 单元测试中Producer注入失败</h5><p>问题描述：在Test中使用@Autowired注入Producer对象一直失败，由于对单元测试方面知识的欠缺，在这里遇到这个问题。<br>原因：读取applicationContext.xml配置文件之后才能注入，需要在Test类上使用SpringBootTest注解读取配置文件，在主类上添加读取配置文件的注解在这里是不起作用的。</p>
+<pre><code>@RunWith(SpringRunner.class)
+@SpringBootTest
+public class testMQ {
+
+    @Autowired
+    private Producer producer;
+
+    @Test
+    public void testMQ() throws Exception{
+        String jsonData = &quot;{id:1}&quot;;
+        Message msg = new Message(&quot;sms&quot;,null,jsonData.getBytes(RemotingHelper.DEFAULT_CHARSET));
+        SendResult sendResult = producer.getProducer().send(msg);
+        //对返回结果作处理
+        SendStatus sendStatus = sendResult.getSendStatus();
+    }
+}
+</code></pre><p>RunWith和SpringBootTest注解。加入这两个注解后就可以使用Autowired自动注入所需要的bean。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/15/记录一次在docker容器中部署rocketmq的过程/" rel="next" title="记录一次在docker容器中部署rocketmq的过程">
+                <i class="fa fa-chevron-left"></i> 记录一次在docker容器中部署rocketmq的过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在项目中使用消息队列以提高QPS的方案探究"><span class="nav-number">1.</span> <span class="nav-text">在项目中使用消息队列以提高QPS的方案探究</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#改造效果对比"><span class="nav-number">2.</span> <span class="nav-text">改造效果对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-改造前压测情况"><span class="nav-number">2.1.</span> <span class="nav-text">一. 改造前压测情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟500个用户同时发短信"><span class="nav-number">2.1.1.</span> <span class="nav-text">模拟500个用户同时发短信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟750个用户同时发短信"><span class="nav-number">2.1.2.</span> <span class="nav-text">模拟750个用户同时发短信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟1000个用户同时发短信"><span class="nav-number">2.1.3.</span> <span class="nav-text">模拟1000个用户同时发短信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">2.1.4.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二-改造后压测情况"><span class="nav-number">2.2.</span> <span class="nav-text">二. 改造后压测情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟500个用户同时发短信-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">模拟500个用户同时发短信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟750个用户同时发短信-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">模拟750个用户同时发短信</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#改造过程"><span class="nav-number">3.</span> <span class="nav-text">改造过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#springboot使用rocketmq"><span class="nav-number">3.1.</span> <span class="nav-text">springboot使用rocketmq</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-在pom文件中引入相关jar包"><span class="nav-number">3.1.0.1.</span> <span class="nav-text">1. 在pom文件中引入相关jar包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-配置Producer为bean"><span class="nav-number">3.1.0.2.</span> <span class="nav-text">2. 配置Producer为bean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册producer"><span class="nav-number">3.1.0.3.</span> <span class="nav-text">3. 注册producer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-配置consumer为bean"><span class="nav-number">3.1.0.4.</span> <span class="nav-text">4. 配置consumer为bean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-注册consumer"><span class="nav-number">3.1.0.5.</span> <span class="nav-text">5. 注册consumer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-配置消息监听器MessageListener"><span class="nav-number">3.1.0.6.</span> <span class="nav-text">6. 配置消息监听器MessageListener</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-网关接口改造"><span class="nav-number">3.1.0.7.</span> <span class="nav-text">7.  网关接口改造</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。"><span class="nav-number">3.1.0.7.1.</span> <span class="nav-text">以上就是完整的改造过程，改造完之后重新推导码云并在服务器拉取打包编译后重新上线，经过测试，qps有明显的提高。</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改造过程中遇到的问题"><span class="nav-number">3.1.1.</span> <span class="nav-text">改造过程中遇到的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-单元测试中Producer注入失败"><span class="nav-number">3.1.1.0.1.</span> <span class="nav-text">1. 单元测试中Producer注入失败</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
