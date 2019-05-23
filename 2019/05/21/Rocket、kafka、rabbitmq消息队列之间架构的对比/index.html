@@ -89,7 +89,9 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/rocketmq_architecture.png">
 <meta property="og:image" content="http://yoursite.com/uploads/kafka-architecture.png">
-<meta property="og:updated_time" content="2019-05-22T08:56:43.329Z">
+<meta property="og:image" content="http://yoursite.com/uploads/log_anatomy.png">
+<meta property="og:image" content="http://yoursite.com/uploads/consumer-groups(kafka">
+<meta property="og:updated_time" content="2019-05-22T11:40:00.990Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Rocket、kafka、rabbitmq消息队列之间架构的对比">
 <meta name="twitter:description" content="Rocket、kafka、rabbitmq消息队列之间架构的对比一个消息队列需要解决哪些问题阿里中间件团队的这篇十分钟入门RocketMq文章中指出了一个消息中间件需要解决哪些问题，然后展示了RocketMq是如何工作的。  发布/订阅：基本功能 消息优先级：消息的优先投递功能，RocketMq及一些持久化的消息队列要么不支持消息优先级，要么只支持分级别的消息优先级。rocketmq属于后者，ka">
@@ -361,6 +363,14 @@
 <li>Consumer跟Producer类似，跟其中一台NameServer建立长连接，获取当前订阅Topic存在哪些Broker上，然后直接跟Broker建立连接通道，开始消费消息。</li>
 </ul>
 <h4 id="Kafka架构"><a href="#Kafka架构" class="headerlink" title="Kafka架构"></a>Kafka架构</h4><p><img src="/uploads/kafka-architecture.png" alt="kafka架构" title="kafka架构"></p>
+<h4 id="Kafka工作流程"><a href="#Kafka工作流程" class="headerlink" title="Kafka工作流程"></a>Kafka工作流程</h4><p><img src="/uploads/log_anatomy.png" alt="kafka工作流程" title="kafka工作流程"></p>
+<h5 id="kafka为每个主题维护了分布式的分区-partition-日志文件，每个partition在kafka存储层面是append-log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset-offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。"><a href="#kafka为每个主题维护了分布式的分区-partition-日志文件，每个partition在kafka存储层面是append-log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset-offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。" class="headerlink" title="kafka为每个主题维护了分布式的分区(partition)日志文件，每个partition在kafka存储层面是append log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset,offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。"></a>kafka为每个主题维护了分布式的分区(partition)日志文件，每个partition在kafka存储层面是append log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset,offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。</h5><h5 id="partition按照key划分"><a href="#partition按照key划分" class="headerlink" title="partition按照key划分"></a>partition按照key划分</h5><p>1.如果没有Key值则进行轮询发送。<br>2.如果有Key值，对Key值进行Hash，然后对分区数量取余，保证了同一个Key值的会被路由到同一个分区，如果想队列的强顺序一致性，可以让所有的消息都设置为同一个Key。</p>
+<h2 id="消息消费过程"><a href="#消息消费过程" class="headerlink" title="消息消费过程"></a>消息消费过程</h2><h4 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h4><p><img src="/uploads/consumer-groups(kafka" alt="kafa消费过程">.png “kafa消费过程”)</p>
+<ul>
+<li>每个消息实例可以消费一个或多个topic内的分区，但是消费者的数目不能多于topic分区数目</li>
+<li>kafka和rocketmq的消费端都能够控制消费的进度，通过offset偏移量实现跳跃消费，回溯消费，按key消费。</li>
+</ul>
+<p>#### </p>
 <p><a href="http://jm.taobao.org/2017/01/12/rocketmq-quick-start-in-10-minutes/" title="十分钟入门rocketMq" target="_blank" rel="noopener">十分钟入门rocketMq</a><br><a href="https://github.com/apache/rocketmq/blob/master/docs/cn/design.md" title="RocketMq详细设计" target="_blank" rel="noopener">RocketMq详细设计</a></p>
 
       
@@ -395,6 +405,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/23/使用Jmeter-nmon对服务器性能做压测与分析/" rel="prev" title="使用Jmeter+nmon对服务器性能做压测与分析">
+                使用Jmeter+nmon对服务器性能做压测与分析 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -475,7 +489,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -521,7 +535,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocket、kafka、rabbitmq消息队列之间架构的对比"><span class="nav-number">1.</span> <span class="nav-text">Rocket、kafka、rabbitmq消息队列之间架构的对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个消息队列需要解决哪些问题"><span class="nav-number">1.1.</span> <span class="nav-text">一个消息队列需要解决哪些问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">1.2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RocketMq"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">RocketMq</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RocketMq工作流程"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">RocketMq工作流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Kafka架构"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">Kafka架构</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Rocket、kafka、rabbitmq消息队列之间架构的对比"><span class="nav-number">1.</span> <span class="nav-text">Rocket、kafka、rabbitmq消息队列之间架构的对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个消息队列需要解决哪些问题"><span class="nav-number">1.1.</span> <span class="nav-text">一个消息队列需要解决哪些问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">1.2.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RocketMq"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">RocketMq</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RocketMq工作流程"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">RocketMq工作流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Kafka架构"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">Kafka架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Kafka工作流程"><span class="nav-number">1.2.0.4.</span> <span class="nav-text">Kafka工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#kafka为每个主题维护了分布式的分区-partition-日志文件，每个partition在kafka存储层面是append-log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset-offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。"><span class="nav-number">1.2.0.4.1.</span> <span class="nav-text">kafka为每个主题维护了分布式的分区(partition)日志文件，每个partition在kafka存储层面是append log。任何发布到此partition的消息都会被追加到log文件的尾部，在分区中的每条消息都会按照时间顺序分配到一个单调递增的顺序编号，也就是我们的offset,offset是一个long型的数字，我们通过这个offset可以确定一条在该partition下的唯一消息。在partition下面是保证了有序性，但是在topic下面没有保证有序性。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#partition按照key划分"><span class="nav-number">1.2.0.4.2.</span> <span class="nav-text">partition按照key划分</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息消费过程"><span class="nav-number">1.3.</span> <span class="nav-text">消息消费过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#kafka"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">kafka</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
