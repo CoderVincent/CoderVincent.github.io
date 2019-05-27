@@ -87,10 +87,17 @@
 <meta property="og:site_name" content="一个杯子">
 <meta property="og:description" content="秒杀项目总结redis部分1. 搭建Redis服务器网上有很多相关资料，搭建一个redis集群一般而言都会搭建3主3从。这里只搭建了一个单机版。 Redis 集群搭建详细指南 2. 基于JedisPool实现一个自己的Redis操作类选择实现一个自己的Redis操作类主要是基于以下考虑，在团队里面写代码操作的都是一个公共的redis服务器，如果大家都在里面随便取变量的名字很有可能会造成混淆，所以需">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-27T03:22:40.617Z">
+<meta property="og:image" content="http://yoursite.com/uploads/miaosha/user.png">
+<meta property="og:image" content="http://yoursite.com/uploads/miaosha/goods.png">
+<meta property="og:image" content="http://yoursite.com/uploads/miaosha/miaosha_goods.png">
+<meta property="og:image" content="http://yoursite.com/uplodas/miaosha/order_info.png">
+<meta property="og:image" content="http://yoursite.com/uploads/miaosha/miaosha_order.png">
+<meta property="og:image" content="http://yoursite.com/uploads/miaosha/秒杀流程.png">
+<meta property="og:updated_time" content="2019-05-27T13:14:17.278Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="秒杀项目总结">
 <meta name="twitter:description" content="秒杀项目总结redis部分1. 搭建Redis服务器网上有很多相关资料，搭建一个redis集群一般而言都会搭建3主3从。这里只搭建了一个单机版。 Redis 集群搭建详细指南 2. 基于JedisPool实现一个自己的Redis操作类选择实现一个自己的Redis操作类主要是基于以下考虑，在团队里面写代码操作的都是一个公共的redis服务器，如果大家都在里面随便取变量的名字很有可能会造成混淆，所以需">
+<meta name="twitter:image" content="http://yoursite.com/uploads/miaosha/user.png">
 
 
 
@@ -621,6 +628,7 @@ public static GoodsKey getGoodsList = new GoodsKey(60,&quot;gl&quot;);
 public static GoodsKey getGoodsDetail = new GoodsKey(60,&quot;gt&quot;);
 public static GoodsKey getMiaoshaGoodsStock = new GoodsKey(0,&quot;gs&quot;);
 </code></pre><p>}</p>
+<hr>
 <h2 id="ControllerAdvice-ExceptionHandler-全局处理-Controller-层异常"><a href="#ControllerAdvice-ExceptionHandler-全局处理-Controller-层异常" class="headerlink" title="@ControllerAdvice + @ExceptionHandler 全局处理 Controller 层异常"></a>@ControllerAdvice + @ExceptionHandler 全局处理 Controller 层异常</h2><p>在Controller层进行数据校验的过程中，经常会有和数据库不一致或者参数校验错误引起的异常，如果每一处异常我们都用try-catch语块去捕获的话会带来许多冗余代码，影响代码的美观度。通过自定义全局异常+消息体格式的方式将全局的异常都管理起来。</p>
 <h3 id="1-ControllerAdvice注解定义全局异常处理类"><a href="#1-ControllerAdvice注解定义全局异常处理类" class="headerlink" title="1. ControllerAdvice注解定义全局异常处理类"></a>1. ControllerAdvice注解定义全局异常处理类</h3><pre><code>@ControllerAdvice
 @ResponseBody
@@ -699,7 +707,32 @@ public Result&lt;String&gt; doLogin(HttpServletResponse response, @Valid LoginVo
     addCookie(response,token,user);
     return token;
 }
-</code></pre>
+</code></pre><h5 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h5><p>在这里我们用直接抛出异常的方式对校验情况构造了我们自己定义的异常，而且在GlobalException异常类中传入了消息错误描述。<br>@ControllerAdvice，是Spring3.2提供的新注解，从名字上可以看出大体意思是控制器通知，和AOP有关。</p>
+<hr>
+<h2 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h2><p>一个秒杀系统至少会有两个步骤：减库存和下订单，要完成这两个步骤我们至少需要设计三个表：商品表、用户表、订单表。但是如果在一个真实的电商系统中开展一次秒杀活动，直接使用原有的表可能不仅无法满足我们的需求还会对现有的业务造成一定的影响，我们还需要设计专门存储秒杀信息的表，所以这里设计了五张表：用户表、商品表、秒杀商品表、订单表、秒杀订单表。</p>
+<p><strong>用户表</strong><br><img src="/uploads/miaosha/user.png" alt="用户表" title="用户表"></p>
+<p><strong>商品表</strong><br><img src="/uploads/miaosha/goods.png" alt="商品表" title="商品表"></p>
+<p><strong>秒杀商品表</strong><br><img src="/uploads/miaosha/miaosha_goods.png" alt="秒杀商品表" title="秒杀商品表"></p>
+<p><strong>订单表</strong><br><img src="/uplodas/miaosha/order_info.png" alt="订单表" title="订单表"></p>
+<p><strong>秒杀订单表</strong><br><img src="/uploads/miaosha/miaosha_order.png" alt="秒杀订单表" title="秒杀订单表"></p>
+<h4 id="为什么要建立商品表和秒杀商品表"><a href="#为什么要建立商品表和秒杀商品表" class="headerlink" title="为什么要建立商品表和秒杀商品表"></a>为什么要建立商品表和秒杀商品表</h4><p>答： 秒杀商品的数量和价格与商品表不同，如果不建立需要在原来的商品表增设新的字段，不仅会影响原有模块的代码，还会增加表的冗余。</p>
+<h4 id="为什么设计秒杀订单表"><a href="#为什么设计秒杀订单表" class="headerlink" title="为什么设计秒杀订单表"></a>为什么设计秒杀订单表</h4><p>答： 原因同上述一样，避免表的冗余性。</p>
+<hr>
+<h2 id="功能设计"><a href="#功能设计" class="headerlink" title="功能设计"></a>功能设计</h2><p><img src="/uploads/miaosha/秒杀流程.png" alt="秒杀" title="秒杀"></p>
+<p>其实秒杀系统的逻辑并不复杂，后台接收到一个秒杀请求后就执行减库存和下订单的逻辑，直到库存为0，标志着秒杀结束，但是整个过程中会遇到很多问题，比如超卖问题、Redis和DB的一致性问题。</p>
+<hr>
+<h2 id="秒杀系统如何做性能优化"><a href="#秒杀系统如何做性能优化" class="headerlink" title="秒杀系统如何做性能优化"></a>秒杀系统如何做性能优化</h2><blockquote>
+<p>为了对抗高并发，一个秒杀系统被层层优化。</p>
+</blockquote>
+<h3 id="秒杀系统优化策略"><a href="#秒杀系统优化策略" class="headerlink" title="秒杀系统优化策略"></a><strong><em>秒杀系统优化策略</em></strong></h3><p>面对高并发大流量冲击，秒杀系统能否支撑的住还需要做一系列优化。总的思路是让响应结果在越前面的位置返回越好，减少请求。然后从前端向底层进行优化。</p>
+<h4 id="页面缓存"><a href="#页面缓存" class="headerlink" title="页面缓存"></a>页面缓存</h4><p>前端请求传到Controller，通常会经过渲染然后将页面返回到前端。如果页面中的内容不经常更新就可以将页面静态化，将渲染后的页面保存起来并放入缓存，下次请求的时候直接从缓存中取出页面然后返回即可。</p>
+<h4 id="对象缓存"><a href="#对象缓存" class="headerlink" title="对象缓存"></a>对象缓存</h4><p>在前端和数据库之间加一层redis缓存，内存的数据请求速度是非常快的，如果将数据放到缓存下次请求就可以直接从内存中取这条数据而不需要再访问数据库。但是要注意数据库和缓存的数据一致性，例如更新数据的时候一定要先更新数据库再更新缓存，否则会造成数据库和缓存的数据不一致。</p>
+<h4 id="页面静态化"><a href="#页面静态化" class="headerlink" title="页面静态化"></a>页面静态化</h4><p>秒杀页面访问量大，如果每个人进来都需要动态的从后台去请求数据那么势必带来大量的并发冲垮页面，而秒杀的商品一般不会有信息上的改动，所以我们通过将页面静态化可以极大的提高我们的速度。</p>
+<h4 id="静态资源优化（合并js和css请求）"><a href="#静态资源优化（合并js和css请求）" class="headerlink" title="静态资源优化（合并js和css请求）"></a>静态资源优化（合并js和css请求）</h4><p>通过Nginx配置将静态资源合并传输</p>
+<h4 id="redis预减库存"><a href="#redis预减库存" class="headerlink" title="redis预减库存"></a>redis预减库存</h4><p>系统启动时就将商品库存加载到Redis中，这样在请求过来时就可以通过Redis判断商品是否还有剩余，如果没有剩余就直接返回秒杀失败，有剩余就进行接下来的操作，并且把缓存中的库存数目减1.</p>
+<h4 id="使用本地标识截断请求"><a href="#使用本地标识截断请求" class="headerlink" title="使用本地标识截断请求"></a>使用本地标识截断请求</h4><p>这个本地标识可以在负载均衡层做也可以在内存做，前者就是在负载均衡维持一个布尔变量，标记秒杀是否结束，如果结束直接返回秒杀结束的响应结果就好，而不用继续接下来的流程。如果放在内存做，就是在代码中维持一个布尔类型的全局变量即可，用来标记秒杀是否结束。</p>
+<h4 id="利用消息队列异步下单"><a href="#利用消息队列异步下单" class="headerlink" title="利用消息队列异步下单"></a>利用消息队列异步下单</h4><p>应对大流量，使用mq来做削峰是一个很常见的手段，将来不及处理的消息先入队，库存和订单模块再去mq中拉取消息来处理。</p>
+
       
     </div>
     
@@ -858,7 +891,7 @@ public Result&lt;String&gt; doLogin(HttpServletResponse response, @Valid LoginVo
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#秒杀项目总结"><span class="nav-number">1.</span> <span class="nav-text">秒杀项目总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis部分"><span class="nav-number">1.1.</span> <span class="nav-text">redis部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-搭建Redis服务器"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 搭建Redis服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-基于JedisPool实现一个自己的Redis操作类"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 基于JedisPool实现一个自己的Redis操作类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#具体做法："><span class="nav-number">1.1.2.1.</span> <span class="nav-text">具体做法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ControllerAdvice-ExceptionHandler-全局处理-Controller-层异常"><span class="nav-number">1.2.</span> <span class="nav-text">@ControllerAdvice + @ExceptionHandler 全局处理 Controller 层异常</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ControllerAdvice注解定义全局异常处理类"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. ControllerAdvice注解定义全局异常处理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-定义GlobalException类"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 定义GlobalException类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-处理Service上的异常"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 处理Service上的异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Controller"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">Controller</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">Service</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#秒杀项目总结"><span class="nav-number">1.</span> <span class="nav-text">秒杀项目总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis部分"><span class="nav-number">1.1.</span> <span class="nav-text">redis部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-搭建Redis服务器"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 搭建Redis服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-基于JedisPool实现一个自己的Redis操作类"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 基于JedisPool实现一个自己的Redis操作类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#具体做法："><span class="nav-number">1.1.2.1.</span> <span class="nav-text">具体做法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ControllerAdvice-ExceptionHandler-全局处理-Controller-层异常"><span class="nav-number">1.2.</span> <span class="nav-text">@ControllerAdvice + @ExceptionHandler 全局处理 Controller 层异常</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ControllerAdvice注解定义全局异常处理类"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. ControllerAdvice注解定义全局异常处理类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-定义GlobalException类"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 定义GlobalException类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-处理Service上的异常"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. 处理Service上的异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Controller"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">Controller</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Service"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">Service</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#代码解析"><span class="nav-number">1.2.3.2.1.</span> <span class="nav-text">代码解析</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库设计"><span class="nav-number">1.3.</span> <span class="nav-text">数据库设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么要建立商品表和秒杀商品表"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">为什么要建立商品表和秒杀商品表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为什么设计秒杀订单表"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">为什么设计秒杀订单表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能设计"><span class="nav-number">1.4.</span> <span class="nav-text">功能设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#秒杀系统如何做性能优化"><span class="nav-number">1.5.</span> <span class="nav-text">秒杀系统如何做性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#秒杀系统优化策略"><span class="nav-number">1.5.1.</span> <span class="nav-text">秒杀系统优化策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#页面缓存"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">页面缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象缓存"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">对象缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#页面静态化"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">页面静态化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态资源优化（合并js和css请求）"><span class="nav-number">1.5.1.4.</span> <span class="nav-text">静态资源优化（合并js和css请求）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#redis预减库存"><span class="nav-number">1.5.1.5.</span> <span class="nav-text">redis预减库存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用本地标识截断请求"><span class="nav-number">1.5.1.6.</span> <span class="nav-text">使用本地标识截断请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用消息队列异步下单"><span class="nav-number">1.5.1.7.</span> <span class="nav-text">利用消息队列异步下单</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
