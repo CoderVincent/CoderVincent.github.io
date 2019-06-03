@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
+<meta name="description" content="Springcloud zuul介绍与使用 每次学习和使用一门新技术的时候，我们都要问自己几个问题，带着问题去思考，才能真正的明白这门技术的使用、优势和缺点。   zuul是什么？ zuul有什么好处？ zuul的原理是什么？  zuul是什么？zuul是Springcloud体系下的API网关组件，在网关层面我们可以完成统一的服务调用；还能做网关层的过滤，减少无效请求被传到后台；做限流防止服务雪">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何设计一个秒杀系统">
-<meta property="og:url" content="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/index.html">
+<meta property="og:title" content="Springcloud zuul介绍与使用">
+<meta property="og:url" content="http://yoursite.com/2019/06/03/Springcloud-zuul介绍与使用/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
+<meta property="og:description" content="Springcloud zuul介绍与使用 每次学习和使用一门新技术的时候，我们都要问自己几个问题，带着问题去思考，才能真正的明白这门技术的使用、优势和缺点。   zuul是什么？ zuul有什么好处？ zuul的原理是什么？  zuul是什么？zuul是Springcloud体系下的API网关组件，在网关层面我们可以完成统一的服务调用；还能做网关层的过滤，减少无效请求被传到后台；做限流防止服务雪">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/uploads/miaosha.png">
-<meta property="og:updated_time" content="2019-04-18T12:46:40.740Z">
+<meta property="og:image" content="http://yoursite.com/uploads/短信平台架构图.png">
+<meta property="og:updated_time" content="2019-06-03T08:45:52.906Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何设计一个秒杀系统">
-<meta name="twitter:description" content="如何设计一个秒杀系统 本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。  1. 设计难点 秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。 参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。 突然增加的网络和带宽，为了避免出现网络拥塞">
-<meta name="twitter:image" content="http://yoursite.com/uploads/miaosha.png">
+<meta name="twitter:title" content="Springcloud zuul介绍与使用">
+<meta name="twitter:description" content="Springcloud zuul介绍与使用 每次学习和使用一门新技术的时候，我们都要问自己几个问题，带着问题去思考，才能真正的明白这门技术的使用、优势和缺点。   zuul是什么？ zuul有什么好处？ zuul的原理是什么？  zuul是什么？zuul是Springcloud体系下的API网关组件，在网关层面我们可以完成统一的服务调用；还能做网关层的过滤，减少无效请求被传到后台；做限流防止服务雪">
+<meta name="twitter:image" content="http://yoursite.com/uploads/短信平台架构图.png">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/06/03/Springcloud-zuul介绍与使用/"/>
 
 
 
 
 
-  <title>如何设计一个秒杀系统 | 一个杯子</title>
+  <title>Springcloud zuul介绍与使用 | 一个杯子</title>
   
 
 
@@ -245,7 +245,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/18/如何设计一个秒杀系统/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/03/Springcloud-zuul介绍与使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -262,7 +262,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">如何设计一个秒杀系统</h1>
+          <h1 class="post-title" itemprop="name headline">Springcloud zuul介绍与使用</h1>
         
 
         <div class="post-meta">
@@ -274,8 +274,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-18T20:05:02+08:00">
-                2019-04-18
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T16:16:57+08:00">
+                2019-06-03
               </time>
             
 
@@ -297,8 +297,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/大型网站技术架构/" itemprop="url" rel="index">
-                    <span itemprop="name">大型网站技术架构</span>
+                  <a href="/categories/springcloud/" itemprop="url" rel="index">
+                    <span itemprop="name">springcloud</span>
                   </a>
                 </span>
 
@@ -334,37 +334,29 @@
       
 
       
-        <h1 id="如何设计一个秒杀系统"><a href="#如何设计一个秒杀系统" class="headerlink" title="如何设计一个秒杀系统"></a>如何设计一个秒杀系统</h1><blockquote>
-<p>本篇文章会结合《大型网站技术架构》以及多篇博客来谈谈设计一个秒杀系统到底要注意哪些问题。</p>
+        <h1 id="Springcloud-zuul介绍与使用"><a href="#Springcloud-zuul介绍与使用" class="headerlink" title="Springcloud zuul介绍与使用"></a>Springcloud zuul介绍与使用</h1><blockquote>
+<p>每次学习和使用一门新技术的时候，我们都要问自己几个问题，带着问题去思考，才能真正的明白这门技术的使用、优势和缺点。</p>
 </blockquote>
-<h2 id="1-设计难点"><a href="#1-设计难点" class="headerlink" title="1. 设计难点"></a>1. 设计难点</h2><ol>
-<li>秒杀系统存在的场景一般是在电商网站，如果和网站其他服务部署在一起，一旦出现问题可能会对网站的其他功能造成影响，甚至全线瘫痪。所以秒杀系统应该独立部署。</li>
-<li>参与秒杀的用户会频繁刷新页面，这会给网站的应用服务层和数据层带来并发压力。</li>
-<li>突然增加的网络和带宽，为了避免出现网络拥塞的情况，需要临时租借网络带宽。</li>
-<li>为了防止用户越过秒杀页面，用其他的手段获取下单URL，应该将URL做成动态生成的，在秒杀那一刻出现。</li>
-</ol>
-<h2 id="2-应对策略"><a href="#2-应对策略" class="headerlink" title="2. 应对策略"></a>2. 应对策略</h2><ol>
-<li>秒杀系统独立部署，一主一备提高高可用。</li>
-<li>租用CDN服务器，将秒杀商品页面缓存在CDN上。</li>
-<li>秒杀商品页面静态化，页面尽量精简，最好只有一个秒杀按钮存在，其他内容静态化。</li>
-<li>动态生成随机URL。具体来说就说用一台服务器生成随机数加入URL，在秒杀到点时生成。</li>
-</ol>
-<h2 id="3-架构设计"><a href="#3-架构设计" class="headerlink" title="3. 架构设计"></a>3. 架构设计</h2><p>整体架构设计如下：<br><img src="/uploads/miaosha.png" alt="秒杀系统架构设计" title="秒杀系统架构设计"></p>
+<ul>
+<li>zuul是什么？</li>
+<li>zuul有什么好处？</li>
+<li>zuul的原理是什么？</li>
+</ul>
+<h2 id="zuul是什么？"><a href="#zuul是什么？" class="headerlink" title="zuul是什么？"></a>zuul是什么？</h2><p>zuul是Springcloud体系下的API网关组件，在网关层面我们可以完成统一的服务调用；还能做网关层的过滤，减少无效请求被传到后台；做限流防止服务雪崩；对服务做降级；身份验证；安全防护。</p>
+<h2 id="zuul有什么好处？"><a href="#zuul有什么好处？" class="headerlink" title="zuul有什么好处？"></a>zuul有什么好处？</h2><p>如果单纯的说zuul的好处未免太空洞了一点，这里我将分析我的某个项目的改造过程来对比得到zuul的好处。</p>
+<blockquote>
+<p>背景：某项目初始架构中，专门用一个服务consumer来接收从nginx过来的请求，这个服务由3名后台人员维护，每个人逐个在consumer上写自己的Controller，在Controller中通过服务调用传递请求到自己负责的微服务中。虽然完成了功能，但是缺点也是很明显。</p>
+</blockquote>
+<p>缺点：</p>
 <ol>
-<li>用keepalive保证网关的高可用，防止反向代理服务器挂掉。</li>
-<li>秒杀服务器集群化，支持高可用。</li>
-<li>CDN缓存静态资源。</li>
-<li>应用缓存减少数据库压力。</li>
-<li>数据库读写分离，多台机器用来读，其余用来写。</li>
+<li>多人写一个模块，效率低，程序员之间耦合度高。每次新增微服务接口的同时需要到consumer中再写一遍调用过程，代码冗余度高。</li>
+<li>consumer实质是一个普通的服务，如果想要做过滤、限流、安全验证等功能操作不便。虽然可以在nginx层过滤，但是一些代码层面的过滤比如token验证就无法实现。</li>
 </ol>
-<p>还需要注意的问题：对于来自同一个IP的调用应该保证幂等性，只处理秒杀时刻的一次请求，可以有效的防止秒杀软件模拟人的操作。此外页面上的按钮到点之后只能提交一次，无法重复提交。</p>
-<h2 id="4-业务流程"><a href="#4-业务流程" class="headerlink" title="4. 业务流程"></a>4. 业务流程</h2><ol>
-<li>用户下单</li>
-<li>进入缓存队列</li>
-<li>订单服务轮询缓存取前K个用户发送订单页面</li>
-<li>用户付款成功则调用库存服务减库存</li>
-<li>用户放弃支付给订单模块一个反馈，订单模块再次从缓存队列中消费任务。</li>
-<li>继续返回第4步</li>
+<p>经过改造后的项目架构图如下：<br><img src="/uploads/短信平台架构图.png" alt="项目架构图" title="项目架构图"></p>
+<p>改造后的架构具有这样几个特点：</p>
+<ol>
+<li>使用zuul作为后端的API网关，实现面向服务的路由。也就是说把zuul服务也通过eureka管理，只需要在zuul上维护path和serviceName映射关系就能够自动发现服务并转发服务。</li>
+<li>由于zuul是面向服务的，所以我们不用再同旧的模式一样在每次新增微服务接口后修改两个地方的代码，zuul会直接帮助我们把请求地址修改为服务的地址而不改变内容。</li>
 </ol>
 
       
@@ -390,8 +382,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/17/redo日志和undo日志/" rel="next" title="redo日志和undo日志">
-                <i class="fa fa-chevron-left"></i> redo日志和undo日志
+              <a href="/2019/05/29/短信平台压测方案构思与实施/" rel="next" title="短信平台压测方案构思与实施">
+                <i class="fa fa-chevron-left"></i> 短信平台压测方案构思与实施
               </a>
             
           </div>
@@ -399,10 +391,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/18/CMS收集器详解/" rel="prev" title="CMS收集器详解">
-                CMS收集器详解 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -529,7 +517,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何设计一个秒杀系统"><span class="nav-number">1.</span> <span class="nav-text">如何设计一个秒杀系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-设计难点"><span class="nav-number">1.1.</span> <span class="nav-text">1. 设计难点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-应对策略"><span class="nav-number">1.2.</span> <span class="nav-text">2. 应对策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-架构设计"><span class="nav-number">1.3.</span> <span class="nav-text">3. 架构设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-业务流程"><span class="nav-number">1.4.</span> <span class="nav-text">4. 业务流程</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-zuul介绍与使用"><span class="nav-number">1.</span> <span class="nav-text">Springcloud zuul介绍与使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#zuul是什么？"><span class="nav-number">1.1.</span> <span class="nav-text">zuul是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zuul有什么好处？"><span class="nav-number">1.2.</span> <span class="nav-text">zuul有什么好处？</span></a></li></ol></li></ol></div>
             
 
           </div>
