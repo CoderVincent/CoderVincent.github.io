@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaInst">
+<meta name="description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="spring eureka源码学习">
 <meta property="og:url" content="http://yoursite.com/2019/06/04/spring-eureka源码学习/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaInst">
+<meta property="og:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/Eureka-client初始化.png">
-<meta property="og:updated_time" content="2019-06-04T13:20:25.946Z">
+<meta property="og:updated_time" content="2019-06-05T03:25:01.816Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring eureka源码学习">
-<meta name="twitter:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaInst">
+<meta name="twitter:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
 <meta name="twitter:image" content="http://yoursite.com/uploads/Eureka-client初始化.png">
 
 
@@ -337,7 +337,7 @@
         <h1 id="Springcloud-eureka源码学习"><a href="#Springcloud-eureka源码学习" class="headerlink" title="Springcloud eureka源码学习"></a>Springcloud eureka源码学习</h1><blockquote>
 <p>了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。</p>
 </blockquote>
-<h2 id="Eureka-client初始化"><a href="#Eureka-client初始化" class="headerlink" title="Eureka-client初始化"></a>Eureka-client初始化</h2><p><img src="/uploads/Eureka-client初始化.png" alt="Eureka-client初始化" title="Eureka-client初始化"></p>
+<h2 id="1-Eureka-client初始化"><a href="#1-Eureka-client初始化" class="headerlink" title="1. Eureka-client初始化"></a>1. Eureka-client初始化</h2><p><img src="/uploads/Eureka-client初始化.png" alt="Eureka-client初始化" title="Eureka-client初始化"></p>
 <p>结合上图，Eureka-client初始化过程包括5个步骤</p>
 <ol>
 <li>创建 EurekaInstanceConfig对象</li>
@@ -360,6 +360,17 @@
 </li>
 </ul>
 <p>原理<br>每一个eureka客户端在启动后，都会读取环境变量然后构建配置信息，称为eureka-client的初始化。准备好自身的初始化信息后，下一步才能够注册到注册中心服务器。</p>
+<hr>
+<h2 id="InstanceRegistry"><a href="#InstanceRegistry" class="headerlink" title="InstanceRegistry"></a>InstanceRegistry</h2><p>本节简单介绍下InstanceRegistry，即注册表类，他继承了lookupService接口和LeaseManager两个接口，前者提供了多种应用实例的查询方法，包括通过serviceId查询、查询全部、轮询。后者提供了租用的所有方法，包括租约的注册、续租、取消( 主动下线 )、过期( 过期下线 )。而InstanceRegistry丰富了租约的功能，并提供了更多个性化的定制，包括应用实例状态变更监控、缓存、自我保护、调用和监控。</p>
+<h2 id="2-Eureka-server初始化"><a href="#2-Eureka-server初始化" class="headerlink" title="2. Eureka-server初始化"></a>2. Eureka-server初始化</h2><p>同Eureka-client一样，Eureka-server在启动的时候同样是读取一些属性并做一些基本的配置。这里的配置会写到EurekaServerConfig这个对象中，它们包括认证相关、限流相关、注册信息相关、自我保护机制、集群相关。然后EurekaBootStrap这个对象会初始化应用的上下文信息。</p>
+<h2 id="3-应用实例注册"><a href="#3-应用实例注册" class="headerlink" title="3. 应用实例注册"></a>3. 应用实例注册</h2><h3 id="两个问题"><a href="#两个问题" class="headerlink" title="两个问题"></a>两个问题</h3><ol>
+<li>什么时候注册？</li>
+<li>注册的时候发生了什么？</li>
+<li>注册的时候服务端发生了什么？</li>
+</ol>
+<h4 id="1-什么时候注册？"><a href="#1-什么时候注册？" class="headerlink" title="1. 什么时候注册？"></a>1. 什么时候注册？</h4><p>结论：<strong>实例状态变更的时候会注册</strong> ，应用信息从starting变为up的时候会触发一个监听器，然后会调用instanceInfoReplicator的方法完成注册。<strong>不止第一次会注册，在状态变更的时候也会注册</strong>。</p>
+<h4 id="2-注册的时候客户端发生了什么？"><a href="#2-注册的时候客户端发生了什么？" class="headerlink" title="2. 注册的时候客户端发生了什么？"></a>2. 注册的时候客户端发生了什么？</h4><p>结论：<strong>调用registry方法向server端发送自身实例信息</strong>在上面已经讲过EurekaClient这个对象是是应用客户端实例和服务器交互的关键类，所以在Eureka-client发起注册的时候也是这个类的子类来调用一个Registry方法，这个方法做了一件事情就是向server端发送post请求将自身的实例信息类InstanceInfo发送过去。</p>
+<h4 id="3-注册的时候服务端发生了什么？"><a href="#3-注册的时候服务端发生了什么？" class="headerlink" title="3. 注册的时候服务端发生了什么？"></a>3. 注册的时候服务端发生了什么？</h4><p>结论：<strong>调用父类方法注册和同步</strong>，会调用父类注册方法注册，如果注册中心是集群模式，会将自身的增量信息加入到一个修改队列里面，以便集群中的其他Eureka-server实例同步应用实例的信息。<a href="https://blog.csdn.net/zhxdick/article/details/78668718" title="eureka-server发生了什么" target="_blank" rel="noopener">eureka-server发生了什么</a></p>
 
       
     </div>
@@ -519,7 +530,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">Eureka-client初始化</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1. Eureka-client初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstanceRegistry"><span class="nav-number">1.2.</span> <span class="nav-text">InstanceRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Eureka-server初始化"><span class="nav-number">1.3.</span> <span class="nav-text">2. Eureka-server初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-应用实例注册"><span class="nav-number">1.4.</span> <span class="nav-text">3. 应用实例注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题"><span class="nav-number">1.4.1.</span> <span class="nav-text">两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候注册？"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 什么时候注册？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注册的时候客户端发生了什么？"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 注册的时候客户端发生了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册的时候服务端发生了什么？"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 注册的时候服务端发生了什么？</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
