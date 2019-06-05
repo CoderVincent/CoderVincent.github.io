@@ -88,7 +88,8 @@
 <meta property="og:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/Eureka-client初始化.png">
-<meta property="og:updated_time" content="2019-06-05T03:25:01.816Z">
+<meta property="og:image" content="http://yoursite.com/uploads/Eureka注册.png">
+<meta property="og:updated_time" content="2019-06-05T13:23:24.882Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring eureka源码学习">
 <meta name="twitter:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
@@ -370,7 +371,26 @@
 </ol>
 <h4 id="1-什么时候注册？"><a href="#1-什么时候注册？" class="headerlink" title="1. 什么时候注册？"></a>1. 什么时候注册？</h4><p>结论：<strong>实例状态变更的时候会注册</strong> ，应用信息从starting变为up的时候会触发一个监听器，然后会调用instanceInfoReplicator的方法完成注册。<strong>不止第一次会注册，在状态变更的时候也会注册</strong>。</p>
 <h4 id="2-注册的时候客户端发生了什么？"><a href="#2-注册的时候客户端发生了什么？" class="headerlink" title="2. 注册的时候客户端发生了什么？"></a>2. 注册的时候客户端发生了什么？</h4><p>结论：<strong>调用registry方法向server端发送自身实例信息</strong>在上面已经讲过EurekaClient这个对象是是应用客户端实例和服务器交互的关键类，所以在Eureka-client发起注册的时候也是这个类的子类来调用一个Registry方法，这个方法做了一件事情就是向server端发送post请求将自身的实例信息类InstanceInfo发送过去。</p>
-<h4 id="3-注册的时候服务端发生了什么？"><a href="#3-注册的时候服务端发生了什么？" class="headerlink" title="3. 注册的时候服务端发生了什么？"></a>3. 注册的时候服务端发生了什么？</h4><p>结论：<strong>调用父类方法注册和同步</strong>，会调用父类注册方法注册，如果注册中心是集群模式，会将自身的增量信息加入到一个修改队列里面，以便集群中的其他Eureka-server实例同步应用实例的信息。<a href="https://blog.csdn.net/zhxdick/article/details/78668718" title="eureka-server发生了什么" target="_blank" rel="noopener">eureka-server发生了什么</a></p>
+<h4 id="3-注册的时候服务端发生了什么？"><a href="#3-注册的时候服务端发生了什么？" class="headerlink" title="3. 注册的时候服务端发生了什么？"></a>3. 注册的时候服务端发生了什么？</h4><p>结论：<strong>调用父类方法注册和同步到集群中的其他节点，然后主动让response缓存失效</strong>，会调用父类注册方法注册，如果注册中心是集群模式，会将自身的增量信息加入到一个修改队列里面，以便集群中的其他Eureka-server实例同步应用实例的信息。<a href="https://blog.csdn.net/zhxdick/article/details/78668718" title="eureka-server发生了什么" target="_blank" rel="noopener">eureka-server发生了什么</a></p>
+<p>对于第三点的详细过程：</p>
+<ul>
+<li><p>最近修改队列：这个队列是一个默认长度为180s的队列，保存最近180s内应用实例的修改情况。</p>
+</li>
+<li><p>Response缓存：Eureka-client的查询请求会首先经过Response缓存，在注册和取消的时候由于应用实例的修改会使缓存失效，避免读到脏数据。</p>
+</li>
+</ul>
+<p>这里对最近修改队列的线程安全使用了读写锁，但是和通常使用读写锁的方式不太一样，。这里多个实例在写最近修改队列的时候使用<strong>读锁</strong>，读应用实例信息的时候使用<strong>写锁</strong>，每个服务实例注册，取消的时候，都会修改这个队列，这个队列是多线程修改的。但是读取，只有loadingcache的ALL_APPS_DELTAkey初始化线程会读取，而且在缓存失效前都不会再有线程读取。所以可以归纳为，多线程频繁修改，但是单线程不频繁读取。所以这里是一个写多读少的场景。</p>
+<p><img src="/uploads/Eureka注册.png" alt="EurekaServer缓存" title="EurekaServer缓存"></p>
+<h2 id="4-应用实例续租"><a href="#4-应用实例续租" class="headerlink" title="4. 应用实例续租"></a>4. 应用实例续租</h2><h3 id="两个问题-1"><a href="#两个问题-1" class="headerlink" title="两个问题"></a>两个问题</h3><ol>
+<li>为什么要续租？</li>
+<li>续租的过程是怎样的？</li>
+</ol>
+<h3 id="1-为什么要续租？"><a href="#1-为什么要续租？" class="headerlink" title="1. 为什么要续租？"></a>1. 为什么要续租？</h3><p>在注册完服务后，服务提供者会维护一个心跳用来持告诉Eureka Server自己还“活着”，以防止被Eureka Server的剔除任务将该服务实例下线，所以要续租（renew）。</p>
+<ol start="2">
+<li>续租的过程是怎样的？<br>同样，续租的过程分为client发起续租和server接收续租。client的续租逻辑依然写在EurekaClient子类中，但是整个续租的过程是值得研究的，在学习后能收获一些定时任务的知识。</li>
+</ol>
+<h4 id="Eureka-client发起续租"><a href="#Eureka-client发起续租" class="headerlink" title="Eureka-client发起续租"></a>Eureka-client发起续租</h4><p>同样，还是在DiscoveryClient执行续租逻辑，开启一个heartbeat任务定时向server发送续租请求，这是一个put请求，会更新租约信息（时长等），如果调用远程server成功，则开启下一次的定时任务，如果不存在租约，就发起一次注册任务。</p>
+<h4 id="Eureka-server接收续租"><a href="#Eureka-server接收续租" class="headerlink" title="Eureka-server接收续租"></a>Eureka-server接收续租</h4><p>主要是一些失败的处理方法，新的注册数据和旧的注册数据之间的一些对比。</p>
 
       
     </div>
@@ -530,7 +550,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1. Eureka-client初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstanceRegistry"><span class="nav-number">1.2.</span> <span class="nav-text">InstanceRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Eureka-server初始化"><span class="nav-number">1.3.</span> <span class="nav-text">2. Eureka-server初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-应用实例注册"><span class="nav-number">1.4.</span> <span class="nav-text">3. 应用实例注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题"><span class="nav-number">1.4.1.</span> <span class="nav-text">两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候注册？"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 什么时候注册？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注册的时候客户端发生了什么？"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 注册的时候客户端发生了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册的时候服务端发生了什么？"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 注册的时候服务端发生了什么？</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1. Eureka-client初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstanceRegistry"><span class="nav-number">1.2.</span> <span class="nav-text">InstanceRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Eureka-server初始化"><span class="nav-number">1.3.</span> <span class="nav-text">2. Eureka-server初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-应用实例注册"><span class="nav-number">1.4.</span> <span class="nav-text">3. 应用实例注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题"><span class="nav-number">1.4.1.</span> <span class="nav-text">两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候注册？"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 什么时候注册？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注册的时候客户端发生了什么？"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 注册的时候客户端发生了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册的时候服务端发生了什么？"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 注册的时候服务端发生了什么？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-应用实例续租"><span class="nav-number">1.5.</span> <span class="nav-text">4. 应用实例续租</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题-1"><span class="nav-number">1.5.1.</span> <span class="nav-text">两个问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-为什么要续租？"><span class="nav-number">1.5.2.</span> <span class="nav-text">1. 为什么要续租？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-client发起续租"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">Eureka-client发起续租</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-server接收续租"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">Eureka-server接收续租</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
