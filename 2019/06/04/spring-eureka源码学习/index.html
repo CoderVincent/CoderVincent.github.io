@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/uploads/Eureka-client初始化.png">
 <meta property="og:image" content="http://yoursite.com/uploads/Eureka注册.png">
-<meta property="og:updated_time" content="2019-06-05T13:23:24.882Z">
+<meta property="og:updated_time" content="2019-06-09T12:48:12.440Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring eureka源码学习">
 <meta name="twitter:description" content="Springcloud eureka源码学习 了解过程，弄清含义，明白原理是学习源码的三个心法。了解执行过程，弄清具体含义、明白其中原理。  1. Eureka-client初始化 结合上图，Eureka-client初始化过程包括5个步骤  创建 EurekaInstanceConfig对象 使用 EurekaInstanceConfig对象创建InstanceInfo对象 使用 EurekaI">
@@ -364,9 +364,9 @@
 <hr>
 <h2 id="InstanceRegistry"><a href="#InstanceRegistry" class="headerlink" title="InstanceRegistry"></a>InstanceRegistry</h2><p>本节简单介绍下InstanceRegistry，即注册表类，他继承了lookupService接口和LeaseManager两个接口，前者提供了多种应用实例的查询方法，包括通过serviceId查询、查询全部、轮询。后者提供了租用的所有方法，包括租约的注册、续租、取消( 主动下线 )、过期( 过期下线 )。而InstanceRegistry丰富了租约的功能，并提供了更多个性化的定制，包括应用实例状态变更监控、缓存、自我保护、调用和监控。</p>
 <h2 id="2-Eureka-server初始化"><a href="#2-Eureka-server初始化" class="headerlink" title="2. Eureka-server初始化"></a>2. Eureka-server初始化</h2><p>同Eureka-client一样，Eureka-server在启动的时候同样是读取一些属性并做一些基本的配置。这里的配置会写到EurekaServerConfig这个对象中，它们包括认证相关、限流相关、注册信息相关、自我保护机制、集群相关。然后EurekaBootStrap这个对象会初始化应用的上下文信息。</p>
-<h2 id="3-应用实例注册"><a href="#3-应用实例注册" class="headerlink" title="3. 应用实例注册"></a>3. 应用实例注册</h2><h3 id="两个问题"><a href="#两个问题" class="headerlink" title="两个问题"></a>两个问题</h3><ol>
+<h2 id="3-应用实例注册"><a href="#3-应用实例注册" class="headerlink" title="3. 应用实例注册"></a>3. 应用实例注册</h2><h3 id="三个问题"><a href="#三个问题" class="headerlink" title="三个问题"></a>三个问题</h3><ol>
 <li>什么时候注册？</li>
-<li>注册的时候发生了什么？</li>
+<li>注册的时候客户端发生了什么？</li>
 <li>注册的时候服务端发生了什么？</li>
 </ol>
 <h4 id="1-什么时候注册？"><a href="#1-什么时候注册？" class="headerlink" title="1. 什么时候注册？"></a>1. 什么时候注册？</h4><p>结论：<strong>实例状态变更的时候会注册</strong> ，应用信息从starting变为up的时候会触发一个监听器，然后会调用instanceInfoReplicator的方法完成注册。<strong>不止第一次会注册，在状态变更的时候也会注册</strong>。</p>
@@ -381,7 +381,7 @@
 </ul>
 <p>这里对最近修改队列的线程安全使用了读写锁，但是和通常使用读写锁的方式不太一样，。这里多个实例在写最近修改队列的时候使用<strong>读锁</strong>，读应用实例信息的时候使用<strong>写锁</strong>，每个服务实例注册，取消的时候，都会修改这个队列，这个队列是多线程修改的。但是读取，只有loadingcache的ALL_APPS_DELTAkey初始化线程会读取，而且在缓存失效前都不会再有线程读取。所以可以归纳为，多线程频繁修改，但是单线程不频繁读取。所以这里是一个写多读少的场景。</p>
 <p><img src="/uploads/Eureka注册.png" alt="EurekaServer缓存" title="EurekaServer缓存"></p>
-<h2 id="4-应用实例续租"><a href="#4-应用实例续租" class="headerlink" title="4. 应用实例续租"></a>4. 应用实例续租</h2><h3 id="两个问题-1"><a href="#两个问题-1" class="headerlink" title="两个问题"></a>两个问题</h3><ol>
+<h2 id="4-应用实例续租"><a href="#4-应用实例续租" class="headerlink" title="4. 应用实例续租"></a>4. 应用实例续租</h2><h3 id="两个问题"><a href="#两个问题" class="headerlink" title="两个问题"></a>两个问题</h3><ol>
 <li>为什么要续租？</li>
 <li>续租的过程是怎样的？</li>
 </ol>
@@ -389,8 +389,242 @@
 <ol start="2">
 <li>续租的过程是怎样的？<br>同样，续租的过程分为client发起续租和server接收续租。client的续租逻辑依然写在EurekaClient子类中，但是整个续租的过程是值得研究的，在学习后能收获一些定时任务的知识。</li>
 </ol>
-<h4 id="Eureka-client发起续租"><a href="#Eureka-client发起续租" class="headerlink" title="Eureka-client发起续租"></a>Eureka-client发起续租</h4><p>同样，还是在DiscoveryClient执行续租逻辑，开启一个heartbeat任务定时向server发送续租请求，这是一个put请求，会更新租约信息（时长等），如果调用远程server成功，则开启下一次的定时任务，如果不存在租约，就发起一次注册任务。</p>
-<h4 id="Eureka-server接收续租"><a href="#Eureka-server接收续租" class="headerlink" title="Eureka-server接收续租"></a>Eureka-server接收续租</h4><p>主要是一些失败的处理方法，新的注册数据和旧的注册数据之间的一些对比。</p>
+<h4 id="Eureka-client发起续租"><a href="#Eureka-client发起续租" class="headerlink" title="Eureka-client发起续租"></a>Eureka-client发起续租</h4><p>同样，还是在DiscoveryClient执行续租逻辑，开启一个heartbeat任务定时向server发送续租请求，这是一个put请求，会更新租约信息（时长等），如果调用远程server成功，则开启下一次的定时任务，如果不存在租约，就发起一次注册任务。那么这里的问题是，作者在写这段代码的时候是如何写这个定时任务的，也就是如何完成每隔一段时间向server发送一次续租请求，如果请求失败又是如何完成处理下一个续租请求的。</p>
+<h5 id="续租逻辑"><a href="#续租逻辑" class="headerlink" title="续租逻辑"></a>续租逻辑</h5><pre><code>// DiscoveryClient.java
+
+DiscoveryClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config, AbstractDiscoveryClientOptionalArgs args,
+               Provider&lt;BackupRegistry&gt; backupRegistryProvider) {
+    // ... 省略无关代码
+    scheduler = Executors.newScheduledThreadPool(2,
+               new ThreadFactoryBuilder()
+                       .setNameFormat(&quot;DiscoveryClient-%d&quot;)
+                       .setDaemon(true)
+                       .build());
+
+    heartbeatExecutor = new ThreadPoolExecutor(
+              1, clientConfig.getHeartbeatExecutorThreadPoolSize(), 0, TimeUnit.SECONDS,
+              new SynchronousQueue&lt;Runnable&gt;(),
+              new ThreadFactoryBuilder()
+                      .setNameFormat(&quot;DiscoveryClient-HeartbeatExecutor-%d&quot;)
+                      .setDaemon(true)
+                      .build()
+    );  // use direct handoff
+
+    // ... 省略无关代码
+
+    // 【3.2.14】初始化定时任务
+    initScheduledTasks();
+}
+
+private void initScheduledTasks() {
+
+    // 向 Eureka-Server 心跳（续租）执行器
+    if (clientConfig.shouldRegisterWithEureka()) {
+        int renewalIntervalInSecs = instanceInfo.getLeaseInfo().getRenewalIntervalInSecs(); // 续租频率
+        int expBackOffBound = clientConfig.getHeartbeatExecutorExponentialBackOffBound(); //
+        logger.info(&quot;Starting heartbeat executor: &quot; + &quot;renew interval is: &quot; + renewalIntervalInSecs);
+
+        // Heartbeat timer
+        scheduler.schedule(
+               new TimedSupervisorTask(
+                       &quot;heartbeat&quot;,
+                       scheduler,
+                       heartbeatExecutor,
+                       renewalIntervalInSecs,
+                       TimeUnit.SECONDS,
+                       expBackOffBound,
+                       new HeartbeatThread()
+               ),
+               renewalIntervalInSecs, TimeUnit.SECONDS);
+
+          // ... 省略无关代码
+     }
+     // ... 省略无关代码
+}
+</code></pre><p>执行逻辑：</p>
+<ol>
+<li>创建了两个线程池，一个定时调度线程和一个自定义线程池。但是作者没有直接用定时调度线程池执行定时续租逻辑，而是使用了scheduler.schedule这个方法，它的特定是在规定的延迟后只执行一次任务，具体用法如下：<br> // 执行一个一次性任务<pre><code>// command：command中的run方法代表需要执行的任务
+// delay：执行任务的延迟
+public ScheduledFuture&lt;?&gt; schedule(Runnable command,
+                                   long delay,
+                                   TimeUnit unit) {
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    // 将任务包装成ScheduledThreadPoolExecutor.ScheduledFutureTask对象
+    // decorateTask方法直接返回这个ScheduledThreadPoolExecutor.ScheduledFutureTask对象
+    // 子类中可以重写decorateTask方法
+    RunnableScheduledFuture&lt;?&gt; t = decorateTask(command,
+        new ScheduledFutureTask&lt;Void&gt;(command, null,
+                                      triggerTime(delay, unit)));
+    delayedExecute(t);
+    return t;
+}
+</code></pre>那么可以看到传入的这个实现了Runnable这个接口的类TimerSuperVisorTask，它是一个实现了TimerTask的类，而TimerTask一般与Timer配合使用，在这里被当做Runnable传入了newScheduledThreadPool线程池中执行，作者有什么意图呢？猜不透~~</li>
+</ol>
+<p>再来看看TimeSuperVisorTask里面到底实现了什么，<br>    public class TimedSupervisorTask extends TimerTask {</p>
+<pre><code>    private final Counter timeoutCounter;
+    private final Counter rejectedCounter;
+    private final Counter throwableCounter;
+    private final LongGauge threadPoolLevelGauge;
+
+    /**
+     * 定时任务服务
+     */
+    private final ScheduledExecutorService scheduler;
+    /**
+     * 执行子任务线程池
+     */
+    private final ThreadPoolExecutor executor;
+    /**
+     * 子任务执行超时时间
+     */
+    private final long timeoutMillis;
+    /**
+     * 子任务
+     */
+    private final Runnable task;
+    /**
+     * 当前任子务执行频率
+     */
+    private final AtomicLong delay;
+    /**
+     * 最大子任务执行频率
+     *
+     * 子任务执行超时情况下使用
+     */
+    private final long maxDelay;
+
+    public TimedSupervisorTask(String name, ScheduledExecutorService scheduler, ThreadPoolExecutor executor,
+                               int timeout, TimeUnit timeUnit, int expBackOffBound, Runnable task) {
+        this.scheduler = scheduler;
+        this.executor = executor;
+        this.timeoutMillis = timeUnit.toMillis(timeout);
+        this.task = task;
+        this.delay = new AtomicLong(timeoutMillis);
+        this.maxDelay = timeoutMillis * expBackOffBound;
+
+        // Initialize the counters and register.
+        timeoutCounter = Monitors.newCounter(&quot;timeouts&quot;);
+        rejectedCounter = Monitors.newCounter(&quot;rejectedExecutions&quot;);
+        throwableCounter = Monitors.newCounter(&quot;throwables&quot;);
+        threadPoolLevelGauge = new LongGauge(MonitorConfig.builder(&quot;threadPoolUsed&quot;).build());
+        Monitors.registerObject(name, this);
+    }
+
+}
+</code></pre><p>以上是这个类的成员变量和构造函数，接下来是关键的run方法：</p>
+<pre><code>// TimedSupervisorTask.java
+  1: @Override
+  2: public void run() {
+  3:     Future&lt;?&gt; future = null;
+  4:     try {
+  5:         // 提交 任务
+  6:         future = executor.submit(task);
+  7:         //
+  8:         threadPoolLevelGauge.set((long) executor.getActiveCount());
+  9:         // 等待任务 执行完成 或 超时
+ 10:         future.get(timeoutMillis, TimeUnit.MILLISECONDS);  // block until done or timeout
+ 11:         // 设置 下一次任务执行频率
+ 12:         delay.set(timeoutMillis);
+ 13:         //
+ 14:         threadPoolLevelGauge.set((long) executor.getActiveCount());
+ 15:     } catch (TimeoutException e) {
+ 16:         logger.error(&quot;task supervisor timed out&quot;, e);
+ 17:         timeoutCounter.increment(); //
+ 18: 
+ 19:         // 设置 下一次任务执行频率
+ 20:         long currentDelay = delay.get();
+ 21:         long newDelay = Math.min(maxDelay, currentDelay * 2);
+ 22:         delay.compareAndSet(currentDelay, newDelay);
+ 23: 
+ 24:     } catch (RejectedExecutionException e) {
+ 25:         if (executor.isShutdown() || scheduler.isShutdown()) {
+ 26:             logger.warn(&quot;task supervisor shutting down, reject the task&quot;, e);
+ 27:         } else {
+ 28:             logger.error(&quot;task supervisor rejected the task&quot;, e);
+ 29:         }
+ 30: 
+ 31:         rejectedCounter.increment(); //
+ 32:     } catch (Throwable e) {
+ 33:         if (executor.isShutdown() || scheduler.isShutdown()) {
+ 34:             logger.warn(&quot;task supervisor shutting down, can&apos;t accept the task&quot;);
+ 35:         } else {
+ 36:             logger.error(&quot;task supervisor threw an exception&quot;, e);
+ 37:         }
+ 38: 
+ 39:         throwableCounter.increment(); //
+ 40:     } finally {
+ 41:         // 取消 未完成的任务
+ 42:         if (future != null) {
+ 43:             future.cancel(true);
+ 44:         }
+ 45: 
+ 46:         // 调度 下次任务
+ 47:         if (!scheduler.isShutdown()) {
+ 48:             scheduler.schedule(this, delay.get(), TimeUnit.MILLISECONDS);
+ 49:         }
+ 50:     }
+ 51: }
+</code></pre><p>执行逻辑：提交子任务（发送续租请求），如果成功就提交自己到scheduler中并设置同样的时延执行下一次的续租，这里是一个鸡生蛋蛋生鸡的问题，scheduler中提交TimedSupervisorTask任务，然后TimedSupervisorTask中又会传入scheduler并调用它；那如果提交失败，就会捕获超时任务，然后将时延增加为上次的两倍再提交。</p>
+<h4 id="Eureka-server接收续租"><a href="#Eureka-server接收续租" class="headerlink" title="Eureka-server接收续租"></a>Eureka-server接收续租</h4><p>主要是一些失败的处理方法，新的注册数据和旧的注册数据之间的一致性对比，只有在发生变化的时候才会改变应用实例信息。</p>
+<h2 id="5-应用实例下线"><a href="#5-应用实例下线" class="headerlink" title="5. 应用实例下线"></a>5. 应用实例下线</h2><p>Eureka-client部分没有很多有价值的部分，正常的下线逻辑。。</p>
+<p>Eureka-server下线某个实例的时候同时也会对注册的时候做的操作做一遍反操作：</p>
+<pre><code>6: protected boolean internalCancel(String appName, String id, boolean isReplication) {
+ 7:     try {
+ 8:         // 获得读锁
+ 9:         read.lock();
+10:         // 增加 取消注册次数 到 监控
+11:         CANCEL.increment(isReplication);
+12:         // 移除 租约映射
+13:         Map&lt;String, Lease&lt;InstanceInfo&gt;&gt; gMap = registry.get(appName);
+14:         Lease&lt;InstanceInfo&gt; leaseToCancel = null;
+15:         if (gMap != null) {
+16:             leaseToCancel = gMap.remove(id);
+17:         }
+18:         // 添加到 最近取消注册的调试队列
+19:         synchronized (recentCanceledQueue) {
+20:             recentCanceledQueue.add(new Pair&lt;Long, String&gt;(System.currentTimeMillis(), appName + &quot;(&quot; + id + &quot;)&quot;));
+21:         }
+22:         // 移除 应用实例覆盖状态映射
+23:         InstanceStatus instanceStatus = overriddenInstanceStatusMap.remove(id);
+24:         if (instanceStatus != null) {
+25:             logger.debug(&quot;Removed instance id {} from the overridden map which has value {}&quot;, id, instanceStatus.name());
+26:         }
+27:         // 租约不存在
+28:         if (leaseToCancel == null) {
+29:             CANCEL_NOT_FOUND.increment(isReplication); // 添加 取消注册不存在 到 监控
+30:             logger.warn(&quot;DS: Registry: cancel failed because Lease is not registered for: {}/{}&quot;, appName, id);
+31:             return false; // 失败
+32:         } else {
+33:             // 设置 租约的取消注册时间戳
+34:             leaseToCancel.cancel();
+35:             // 添加到 最近租约变更记录队列
+36:             InstanceInfo instanceInfo = leaseToCancel.getHolder();
+37:             String vip = null;
+38:             String svip = null;
+39:             if (instanceInfo != null) {
+40:                 instanceInfo.setActionType(ActionType.DELETED);
+41:                 recentlyChangedQueue.add(new RecentlyChangedItem(leaseToCancel));
+42:                 instanceInfo.setLastUpdatedTimestamp();
+43:                 vip = instanceInfo.getVIPAddress();
+44:                 svip = instanceInfo.getSecureVipAddress();
+45:             }
+46:             // 设置 响应缓存 过期
+47:             invalidateCache(appName, vip, svip);
+48:             logger.info(&quot;Cancelled instance {}/{} (replication={})&quot;, appName, id, isReplication);
+49:             return true; // 成功
+50:         }
+51:     } finally {
+52:         // 释放锁
+53:         read.unlock();
+54:     }
+55: }
+</code></pre><ol>
+<li>集群下线状态同步。</li>
+<li>移除租约映射，<code>Map&lt;String, Lease&lt;InstanceInfo&gt;&gt; gMap = registry.get(appName);</code>取得目前所有维护的租约信息，然后根据ID删除租约信息。</li>
+<li>添加到最近取消注册实例队列</li>
+<li>使缓存失效</li>
+</ol>
 
       
     </div>
@@ -550,7 +784,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1. Eureka-client初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstanceRegistry"><span class="nav-number">1.2.</span> <span class="nav-text">InstanceRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Eureka-server初始化"><span class="nav-number">1.3.</span> <span class="nav-text">2. Eureka-server初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-应用实例注册"><span class="nav-number">1.4.</span> <span class="nav-text">3. 应用实例注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题"><span class="nav-number">1.4.1.</span> <span class="nav-text">两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候注册？"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 什么时候注册？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注册的时候客户端发生了什么？"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 注册的时候客户端发生了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册的时候服务端发生了什么？"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 注册的时候服务端发生了什么？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-应用实例续租"><span class="nav-number">1.5.</span> <span class="nav-text">4. 应用实例续租</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题-1"><span class="nav-number">1.5.1.</span> <span class="nav-text">两个问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-为什么要续租？"><span class="nav-number">1.5.2.</span> <span class="nav-text">1. 为什么要续租？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-client发起续租"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">Eureka-client发起续租</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-server接收续租"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">Eureka-server接收续租</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Springcloud-eureka源码学习"><span class="nav-number">1.</span> <span class="nav-text">Springcloud eureka源码学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eureka-client初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1. Eureka-client初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InstanceRegistry"><span class="nav-number">1.2.</span> <span class="nav-text">InstanceRegistry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Eureka-server初始化"><span class="nav-number">1.3.</span> <span class="nav-text">2. Eureka-server初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-应用实例注册"><span class="nav-number">1.4.</span> <span class="nav-text">3. 应用实例注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#三个问题"><span class="nav-number">1.4.1.</span> <span class="nav-text">三个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候注册？"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 什么时候注册？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-注册的时候客户端发生了什么？"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 注册的时候客户端发生了什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-注册的时候服务端发生了什么？"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 注册的时候服务端发生了什么？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-应用实例续租"><span class="nav-number">1.5.</span> <span class="nav-text">4. 应用实例续租</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两个问题"><span class="nav-number">1.5.1.</span> <span class="nav-text">两个问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-为什么要续租？"><span class="nav-number">1.5.2.</span> <span class="nav-text">1. 为什么要续租？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-client发起续租"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">Eureka-client发起续租</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#续租逻辑"><span class="nav-number">1.5.2.1.1.</span> <span class="nav-text">续租逻辑</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eureka-server接收续租"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">Eureka-server接收续租</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-应用实例下线"><span class="nav-number">1.6.</span> <span class="nav-text">5. 应用实例下线</span></a></li></ol></li></ol></div>
             
 
           </div>
