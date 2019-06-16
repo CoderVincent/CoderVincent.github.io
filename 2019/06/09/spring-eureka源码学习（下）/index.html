@@ -87,10 +87,13 @@
 <meta property="og:site_name" content="一个杯子">
 <meta property="og:description" content="spring eureka源码学习（下） 自我保护机制、过期、全量获取、增量获取、覆盖状态  6. 自我保护机制当Eureka Server节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。一旦进入该模式，Eureka Server就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。当网络故障恢复后，该Eureka Serv">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-14T03:06:27.115Z">
+<meta property="og:image" content="http://yoursite.com/uploads/Eureka服务发现.png">
+<meta property="og:image" content="http://yoursite.com/uploads/Eureka二级缓存模式.png">
+<meta property="og:updated_time" content="2019-06-16T03:06:32.022Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="spring eureka源码学习（下）">
 <meta name="twitter:description" content="spring eureka源码学习（下） 自我保护机制、过期、全量获取、增量获取、覆盖状态  6. 自我保护机制当Eureka Server节点在短时间内丢失过多客户端时（可能发生了网络分区故障），那么这个节点就会进入自我保护模式。一旦进入该模式，Eureka Server就会保护服务注册表中的信息，不再删除服务注册表中的数据（也就是不会注销任何微服务）。当网络故障恢复后，该Eureka Serv">
+<meta name="twitter:image" content="http://yoursite.com/uploads/Eureka服务发现.png">
 
 
 
@@ -357,6 +360,123 @@
 <p>第三个问题，同理，当发现心跳次数大于期望每分钟最小续租次数的时候就退出保护机制。</p>
 <p>第四个问题，有什么缺陷？个人认为当开启自我保护机制时，某些正常运作的服务可能会更新失效，导致使用的时候读到旧的服务信息。此时需要检查出异常到底是因为Eureka-Server出了问题还是Eureka-client出了问题，检查手段也就是判断是否按要求进入了自我保护机制，这是自我保护机制防止自己出现问题而保护大量服务不下线的一种“谦虚”手段，所以在生产环境还是关闭自我保护机制比较好。</p>
 <h2 id="7-过期"><a href="#7-过期" class="headerlink" title="7. 过期"></a>7. 过期</h2><p>由于某些微服务因为网络故障导致不可用，注册中心需要定期检查心跳时长是否超过规定阈值，如果判断某些服务已经过期则需要将其剔除。<br>剔除的逻辑就是先遍历所有的服务，计算上一次续租的时间与当前时间间隔判断是否过期，如果过期就加入到待剔除集合中，然后按照阈值计算出要剔除的服务的总数，再遍历所有过期的服务，按照洗牌算法公平的按批次选出剔除的服务。</p>
+<h2 id="8-服务发现"><a href="#8-服务发现" class="headerlink" title="8. 服务发现"></a>8. 服务发现</h2><p>服务发现分为全量获取和增量获取，两者的区别是全量获取用于在客户端注册初始化阶段获取一次完整的应用实例，而增量获取则是定时周期任务，周期性的从服务中心获取变化实例信息更新本地缓存。完整流程如下图所示。</p>
+<p><img src="/uploads/Eureka服务发现.png" alt="Eureka服务发现" title="Eureka服务发现"></p>
+<p>几个问题：</p>
+<ol>
+<li>为什么Eureka-Server挂了之后，客户端依然可以调通？</li>
+<li>Eureka-Client是怎样感知增量获取成功的？</li>
+<li>上述方式有什么缺点？怎么解决这个问题？</li>
+</ol>
+<h3 id="1-为什么Eureka-Server挂了之后，客户端依然可以调通？"><a href="#1-为什么Eureka-Server挂了之后，客户端依然可以调通？" class="headerlink" title="1. 为什么Eureka-Server挂了之后，客户端依然可以调通？"></a>1. 为什么Eureka-Server挂了之后，客户端依然可以调通？</h3><p>Eureka保证了分布式基础理论CAP中的AP，实现方式是通过缓存。Eureka-Server中使用的是一种响应式缓存，为什么叫做“响应式”，缓存又是怎么设计的？</p>
+<h4 id="响应式缓存"><a href="#响应式缓存" class="headerlink" title="#响应式缓存"></a>#响应式缓存</h4><pre><code>public interface ResponseCache {
+    //根据缓存键获取缓存
+    String get(Key key);
+    //获取缓存并压缩
+    byte[] getGZIP(Key key);
+    //过期缓存
+    void invalidate(String appName, @Nullable String vipAddress, @Nullable String secureVipAddress);
+    //已废弃，下同
+    AtomicLong getVersionDelta();
+    //已废弃，下同
+    AtomicLong getVersionDeltaWithRegions();
+
+}
+</code></pre><h4 id="缓存键"><a href="#缓存键" class="headerlink" title="#缓存键"></a>#缓存键</h4><pre><code>public class Key {
+    //键的枚举类型
+    public enum KeyType {
+        JSON, XML
+    }
+
+    /**
+     * An enum to define the entity that is stored in this cache for this key.
+     */
+    public enum EntityType {
+        Application, VIP, SVIP
+    }
+
+    /**
+     * 实体名
+     */
+    private final String entityName;
+    /**
+     * TODO[0009]：RemoteRegionRegistry
+     */
+    private final String[] regions;
+    /**
+     * 请求参数类型
+     */
+    private final KeyType requestType;
+    /**
+     * 请求 API 版本号
+     */
+    private final Version requestVersion;
+    /**
+     * hashKey
+     */
+    private final String hashKey;
+    /**
+     * 实体类型
+     *
+     * {@link EntityType}
+     */
+    private final EntityType entityType;
+    /**
+     * {@link EurekaAccept}
+     */
+    private final EurekaAccept eurekaAccept;
+
+    public Key(EntityType entityType, String entityName, KeyType type, Version v, EurekaAccept eurekaAccept, @Nullable String[] regions) {
+        this.regions = regions;
+        this.entityType = entityType;
+        this.entityName = entityName;
+        this.requestType = type;
+        this.requestVersion = v;
+        this.eurekaAccept = eurekaAccept;
+        hashKey = this.entityType + this.entityName + (null != this.regions ? Arrays.toString(this.regions) : &quot;&quot;)
+                + requestType.name() + requestVersion.name() + this.eurekaAccept.name();
+    }
+
+    public Key(EntityType entityType, String entityName, KeyType type, Version v, EurekaAccept eurekaAccept, @Nullable String[] regions) {
+        this.regions = regions;
+        this.entityType = entityType;
+        this.entityName = entityName;
+        this.requestType = type;
+        this.requestVersion = v;
+        this.eurekaAccept = eurekaAccept;
+        hashKey = this.entityType + this.entityName + (null != this.regions ? Arrays.toString(this.regions) : &quot;&quot;)
+                + requestType.name() + requestVersion.name() + this.eurekaAccept.name();
+    }
+
+    @Override
+    public int hashCode() {
+        String hashKey = getHashKey();
+        return hashKey.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Key) {
+            return getHashKey().equals(((Key) other).getHashKey());
+        } else {
+            return false;
+        }
+    }
+
+}
+</code></pre><p>缓存键的作用就是封装一个Client的获取基本信息实体类，以便存入缓存中。</p>
+<p>响应式缓存的设计采用了二级缓存模式，其中一级缓存是只读缓存readOnlyCache，内容由二级缓存更新，二级缓存是读写缓存readWriteCache。</p>
+<p><img src="/uploads/Eureka二级缓存模式.png" alt="二级缓存" title="二级缓存"></p>
+<p>当缓存出现不一致的情况时，以二级缓存为主，同时过期并更新一级缓存。二级缓存会设置过期时间，定时任务到时会主动过期二级缓存。</p>
+<h3 id="2-Eureka-Client是怎样感知增量获取成功的？"><a href="#2-Eureka-Client是怎样感知增量获取成功的？" class="headerlink" title="2. Eureka-Client是怎样感知增量获取成功的？"></a>2. Eureka-Client是怎样感知增量获取成功的？</h3><p>增量获取注册实例时会获取到最近变化应用实例集合A，获取之后与本地缓存B合并，生成客户端本次增量获取的一致性哈希码C，在Server端也会有一个一致性哈希码，这个码不是一直不变化的，在有应用实例状态信息变更的情况下会重新计算一致性哈希码。如果客户端在做过一次增量获取后和Server端的一致性哈希码一致就表示此次增量获取成功；若不相等，客户端会再发起一次全量获取。那么问题来了，一致性哈希码是如何计算出来的？</p>
+<h4 id="一致性哈希码"><a href="#一致性哈希码" class="headerlink" title="#一致性哈希码"></a>#一致性哈希码</h4><pre><code>一致性哈希码 = 状态（status）_数量(count)
+</code></pre><p>例如：有2个应用A和B，各自有两个实例，B的某个实例是下线状态，那么此时的一致性哈希码就是DOWN_1_UP_3</p>
+<h4 id="增量获取成功判定"><a href="#增量获取成功判定" class="headerlink" title="#增量获取成功判定"></a>#增量获取成功判定</h4><p>Client端合并最近变化应用实例和本地缓存，计算一致性哈希码，Server端比较</p>
+<h3 id="3-上述方式有什么缺点？"><a href="#3-上述方式有什么缺点？" class="headerlink" title="3. 上述方式有什么缺点？"></a>3. 上述方式有什么缺点？</h3><p>不能真正的保证数据一致性，如果Server端两个实例状态互换，但是Client端最近变化队列+本地缓存真实记录的是原来的状态，此时还是会认为增量获取成功，比如Server端A原来是UP/B原来是DOWN，Server端这两个实例状态发生了交换（一个上线一个下线），但是Client端获取到的还是原来的信息（有可能从缓存中获取的），那这个时候是感知不到的。这个问题其实就是Eureka保证AP而舍弃C产生的副作用。</p>
+<h4 id="如何解决呢？"><a href="#如何解决呢？" class="headerlink" title="如何解决呢？"></a>如何解决呢？</h4><ol>
+<li>修改一致性哈希码计算方法，增加应用实例ID属性。</li>
+<li>设置间隔N做一次全量获取。</li>
+</ol>
 
       
     </div>
@@ -381,7 +501,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/04/spring-eureka源码学习（上）/" rel="next" title="spring eureka源码学习（上）">
+              <a href="/2019/06/04/spring-eureka源码学习/" rel="next" title="spring eureka源码学习（上）">
                 <i class="fa fa-chevron-left"></i> spring eureka源码学习（上）
               </a>
             
@@ -516,7 +636,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#spring-eureka源码学习（下）"><span class="nav-number">1.</span> <span class="nav-text">spring eureka源码学习（下）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-自我保护机制"><span class="nav-number">1.1.</span> <span class="nav-text">6. 自我保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-过期"><span class="nav-number">1.2.</span> <span class="nav-text">7. 过期</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#spring-eureka源码学习（下）"><span class="nav-number">1.</span> <span class="nav-text">spring eureka源码学习（下）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-自我保护机制"><span class="nav-number">1.1.</span> <span class="nav-text">6. 自我保护机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-过期"><span class="nav-number">1.2.</span> <span class="nav-text">7. 过期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-服务发现"><span class="nav-number">1.3.</span> <span class="nav-text">8. 服务发现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-为什么Eureka-Server挂了之后，客户端依然可以调通？"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 为什么Eureka-Server挂了之后，客户端依然可以调通？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#响应式缓存"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">#响应式缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存键"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">#缓存键</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Eureka-Client是怎样感知增量获取成功的？"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Eureka-Client是怎样感知增量获取成功的？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性哈希码"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">#一致性哈希码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增量获取成功判定"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">#增量获取成功判定</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-上述方式有什么缺点？"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. 上述方式有什么缺点？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何解决呢？"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">如何解决呢？</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
