@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="nginx使用与入门 参考：https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/  1. nginx部署与安装此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。 2. nginx.conf模块配置配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下： 12345">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx使用与入门">
+<meta property="og:url" content="http://yoursite.com/2019/06/17/nginx使用与入门/index.html">
+<meta property="og:site_name" content="一个杯子">
+<meta property="og:description" content="nginx使用与入门 参考：https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/  1. nginx部署与安装此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。 2. nginx.conf模块配置配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下： 12345">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-19T08:19:47.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx使用与入门">
+<meta name="twitter:description" content="nginx使用与入门 参考：https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/  1. nginx部署与安装此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。 2. nginx.conf模块配置配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下： 12345">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/17/nginx使用与入门/"/>
+
+
+
+
+
+  <title>nginx使用与入门 | 一个杯子</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一个杯子</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冗长之家</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/17/nginx使用与入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张澧枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/1.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一个杯子">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">nginx使用与入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-17T10:54:12+08:00">
+                2019-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index">
+                    <span itemprop="name">nginx</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="nginx使用与入门"><a href="#nginx使用与入门" class="headerlink" title="nginx使用与入门"></a>nginx使用与入门</h1><blockquote>
+<p>参考：<a href="https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/" target="_blank" rel="noopener">https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/</a></p>
+</blockquote>
+<h2 id="1-nginx部署与安装"><a href="#1-nginx部署与安装" class="headerlink" title="1. nginx部署与安装"></a>1. nginx部署与安装</h2><p>此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。</p>
+<h2 id="2-nginx-conf模块配置"><a href="#2-nginx-conf模块配置" class="headerlink" title="2. nginx.conf模块配置"></a>2. nginx.conf模块配置</h2><p>配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">user nobody; # a directive in the &apos;main&apos; context</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    # configuration of connection processing</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    # Configuration specific to HTTP and affecting all virtual servers  </span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        # configuration of HTTP virtual server 1       </span><br><span class="line">        location /one &#123;</span><br><span class="line">            # configuration for processing URIs starting with &apos;/one&apos;</span><br><span class="line">        &#125;</span><br><span class="line">        location /two &#123;</span><br><span class="line">            # configuration for processing URIs starting with &apos;/two&apos;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    server &#123;</span><br><span class="line">        # configuration of HTTP virtual server 2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stream &#123;</span><br><span class="line">    # Configuration specific to TCP/UDP and affecting all virtual servers</span><br><span class="line">    server &#123;</span><br><span class="line">        # configuration of TCP virtual server 1 </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="日志配置"><a href="#日志配置" class="headerlink" title="#日志配置"></a>#日志配置</h3><h3 id="Context"><a href="#Context" class="headerlink" title="#Context"></a>#Context</h3><p>顶级指令有四个，分别是：</p>
+<ul>
+<li>events：通用连接处理</li>
+<li>http：http流量</li>
+<li>mail：邮件流量</li>
+<li>stream：TCP和UDP流量</li>
+</ul>
+<h4 id="events"><a href="#events" class="headerlink" title="#events"></a>#events</h4><pre><code>event{
+    #新连接进来是是否唤醒所有线程，false则唤醒，true则轮流处理
+    accept_mutex on|off
+    #如果accept_mutex未开启，限定一个工作者等待最长时间
+    accept_mutex_delay time
+    设置debug地址
+    debug_connection 127.0.0.1
+    #一个工作者某时刻接收一个新连接还是所有的新连接
+    multi_accept on|off
+    #指定连接处理方法，通常不用显示指定，nginx会自动选择最高效的
+    user select|poll|epoll|kqueue
+    #在使用epoll的AIO模式的时候，为单个工作进程设置最大的异步IO数
+    work_aio_requests number
+    #单个进程可以打开的最大同步连接数
+    work_connections 512
+}
+</code></pre><p>因为events设置数目较少，后面几个配置项比较多，就跟着其他部分一起了解。</p>
+<h4 id="http"><a href="#http" class="headerlink" title="#http"></a>#http</h4><pre><code>#指定谁可以启动nginx，nobody代表所有用户都可以
+user nobody;
+#取决于CPU数目和存储数据的硬盘驱动数，一般CPU是几核就写几
+worker_processes number|auto;
+#指定错误日志位置，还可以在http/server/location块中配置
+error_log logs/error.log notice;
+#引入配置文件
+include file;
+#指定pid存放的位置，有时候需要停止nginx需要pid来杀死进程。
+pid file；
+#通用连接指令
+event{
+    #新连接进来是是否唤醒所有进程，false则唤醒，true则轮流处理
+    accept_mutex on|off
+    #如果accept_mutex未开启，限定一个进程等待最长时间
+    accept_mutex_delay time
+    设置debug地址
+    debug_connection 127.0.0.1
+    #一个进程某时刻接收一个新连接还是所有的新连接
+    multi_accept on|off
+    #指定连接处理方法，通常不用显示指定，nginx会自动选择最高效的
+    user select|poll|epoll|kqueue
+    #在使用epoll的AIO模式的时候，为单个工作进程设置最大的异步IO数
+    work_aio_requests number
+    #单个进程可以打开的最大同步连接数
+    work_connections 512
+}
+http{
+    #配置日志的格式，参数都是内置参数
+    log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;
+                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;
+                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;
+    #sendfile是一种函数调用，直接在两个文件描述符之间传输数据（内核操作），避免了数据在内核缓冲区和用户缓冲区之间的拷贝，称之为零拷贝，开启可提高性能。
+    sendfile            on;
+    keepalive_timeout   65;
+    #影响meme-type散列表的冲突率
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+    client_max_body_size 1024M;
+server {
+    listen       80;
+    server_name  localhost;
+
+    root         /usr/share/nginx/html;
+
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+
+    #访问 /last.html 的时候，页面内容重写到 /index.html 中，并继续后面的匹配，浏览器地址栏URL地址不变
+    #https://www.jianshu.com/p/10ecc107b5ee（rewrite和proxy_server区别）
+    rewrite /last.html /index.html last;
+
+    location / {
+    try_files $uri $uri/ @router;
+            index index.html;
+    }
+    location @router {
+        rewrite ^.*$ / last;
+    }
+    location /user_manage {
+    proxy_pass http://localhost:7777;
+    }
+    location /application_access {
+    proxy_pass http://localhost:9090;
+    }
+    location /devices {
+    proxy_pass http://localhost:8088/;
+    }
+    location /kuaijian {
+            proxy_read_timeout 7200s;
+    proxy_pass http://192.168.199.174:8989/;
+    }
+
+    error_page 404 /404.html;
+        location = /40x.html {
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}
+}
+</code></pre><h2 id="3-Http负载均衡（7层负载均衡）"><a href="#3-Http负载均衡（7层负载均衡）" class="headerlink" title="3. Http负载均衡（7层负载均衡）"></a>3. Http负载均衡（7层负载均衡）</h2><h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><pre><code>http {
+    upstream backend {
+        server backend1.example.com weight=5;
+        server backend2.example.com;
+        server 192.0.0.1 backup;
+    }
+    server {
+        location / {
+            proxy_pass http://backend;
+        }
+    }
+}
+</code></pre><h3 id="选择负载均衡方法"><a href="#选择负载均衡方法" class="headerlink" title="选择负载均衡方法"></a>选择负载均衡方法</h3><h4 id="1-Round-Robin（轮询）"><a href="#1-Round-Robin（轮询）" class="headerlink" title="1. Round Robin（轮询）"></a>1. Round Robin（轮询）</h4><p>请求被顺序分发到不同的后端、可以设置权重增加某个后端被分配的概率。</p>
+<pre><code>upstream backend {
+   # no load balancing method is specified for Round Robin
+   server backend1.example.com;
+   server backend2.example.com;
+}
+</code></pre><h4 id="2-Least-Connections（最少连接数）"><a href="#2-Least-Connections（最少连接数）" class="headerlink" title="2. Least Connections（最少连接数）"></a>2. Least Connections（最少连接数）</h4><p>请求将被发送到活跃连接数最少的服务器上，依然可以使用权重。</p>
+<pre><code>upstream backend {
+    least_conn;
+    server backend1.example.com;
+    server backend2.example.com;
+}
+</code></pre><h4 id="3-IP-hash"><a href="#3-IP-hash" class="headerlink" title="3. IP hash"></a>3. IP hash</h4><p>计算客户端IP的散列值，将不同IP的客户端散列到不同的后端，在分布式Session中常用到IP_hash，但是这种方式不适合服务器的动态伸缩的问题，所以用更好的一致性hash替代。</p>
+<pre><code>upstream backend {
+    ip_hash;
+    server backend1.example.com;
+    server backend2.example.com;
+}
+</code></pre><h4 id="4-通用hash"><a href="#4-通用hash" class="headerlink" title="4. 通用hash"></a>4. 通用hash</h4><p>由用户自己决定将请求发送到哪个uri</p>
+<pre><code>upstream backend {
+    hash $request_uri consistent;
+    server backend1.example.com;
+    server backend2.example.com;
+}
+</code></pre><h4 id="5-least-time-最少连接时长"><a href="#5-least-time-最少连接时长" class="headerlink" title="5. least time(最少连接时长)"></a>5. least time(最少连接时长)</h4><p>从字面意思看，就是Nginx会选择相应时间最短的server来服务，定义响应时间最短nginx给了三个选项</p>
+<ul>
+<li>header：接收来自Server的第一个字节的时长。</li>
+<li>last_byte：接收完整报文的时长。</li>
+<li><p>last_byte inflight：接收完整报文的时长，但是考虑不完整的请求。</p>
+<pre><code>upstream backend {
+  least_time header;
+  server backend1.example.com;
+  server backend2.example.com;
+</code></pre><p>  }</p>
+</li>
+</ul>
+<h4 id="6-随机"><a href="#6-随机" class="headerlink" title="6. 随机"></a>6. 随机</h4><pre><code>upstream backend {
+    random two least_time=last_byte;
+    server backend1.example.com;
+    server backend2.example.com;
+    server backend3.example.com;
+    server backend4.example.com;
+}
+</code></pre><h2 id="4-TCP和UDP负载均衡（4层负载均衡）"><a href="#4-TCP和UDP负载均衡（4层负载均衡）" class="headerlink" title="4. TCP和UDP负载均衡（4层负载均衡）"></a>4. TCP和UDP负载均衡（4层负载均衡）</h2><blockquote>
+<p>简单理解四层负载均衡和七层负载均衡的区别：所谓四层就是基于IP+端口的负载均衡；七层就是基于URL等应用层信息的负载均衡；同理，还有基于MAC地址的二层负载均衡和基于IP地址的三层负载均衡。 换句换说，二层负载均衡会通过一个虚拟MAC地址接收请求，然后再分配到真实的MAC地址；三层负载均衡会通过一个虚拟IP地址接收请求，然后再分配到真实的IP地址；四层通过虚拟IP+端口接收请求，然后再分配到真实的服务器；七层通过虚拟的URL或主机名接收请求，然后再分配到真实的服务器。</p>
+</blockquote>
+<blockquote>
+<p>所谓的四到七层负载均衡，就是在对后台的服务器进行负载均衡时，依据四层的信息或七层的信息来决定怎么样转发流量。 比如四层的负载均衡，就是通过发布三层的IP地址（VIP），然后加四层的端口号，来决定哪些流量需要做负载均衡，对需要处理的流量进行NAT处理，转发至后台服务器，并记录下这个TCP或者UDP的流量是由哪台服务器处理的，后续这个连接的所有流量都同样转发到同一台服务器处理。七层的负载均衡，就是在四层的基础上（没有四层是绝对不可能有七层的），再考虑应用层的特征，比如同一个Web服务器的负载均衡，除了根据VIP加80端口辨别是否需要处理的流量，还可根据七层的URL、浏览器类别、语言来决定是否要进行负载均衡。举个例子，如果你的Web服务器分成两组，一组是中文语言的，一组是英文语言的，那么七层负载均衡就可以当用户来访问你的域名时，自动辨别用户语言，然后选择对应的语言服务器组进行负载均衡处理。</p>
+</blockquote>
+<h3 id="配置使用"><a href="#配置使用" class="headerlink" title="配置使用"></a>配置使用</h3><pre><code>#stream模块配置TCP和UDP流量
+stream{
+    server{
+        listen 12345;
+        proxy_pass stream_backend;
+    }
+
+    server{
+        #监听UDP需要加上udp参数
+        listen 12346 udp;
+    }
+
+    upstream stream_backend{
+        #最少连接时长
+        least_time first_byte;
+        server 127.0.0.1:12345;
+    }
+}
+</code></pre><h2 id="5-nginx基础命令"><a href="#5-nginx基础命令" class="headerlink" title="5. nginx基础命令"></a>5. nginx基础命令</h2><ul>
+<li>nginx -s stop       快速关闭Nginx，可能不保存相关信息，并迅速终止web服务。</li>
+<li>nginx -s quit       平稳关闭Nginx，保存相关信息，有安排的结束web服务。</li>
+<li>nginx -s reload     因改变了Nginx相关配置，需要重新加载配置而重载。</li>
+<li>nginx -s reopen     重新打开日志文件。</li>
+<li>nginx -c filename   为 Nginx 指定一个配置文件，来代替缺省的。</li>
+<li>nginx -t            不运行，而仅仅测试配置文件。nginx 将检查配置文件的语法的正确性，并尝试打开配置文件中所引用到的文件。</li>
+<li>nginx -v            显示 nginx 的版本。</li>
+<li>nginx -V            显示 nginx 的版本，编译器版本和配置参数。</li>
+</ul>
+<h2 id="6-nginx常用配置"><a href="#6-nginx常用配置" class="headerlink" title="6. nginx常用配置"></a>6. nginx常用配置</h2><h3 id="1-nginx负载均衡配置"><a href="#1-nginx负载均衡配置" class="headerlink" title="1. nginx负载均衡配置"></a>1. nginx负载均衡配置</h3><p>上面基本已经介绍了，略过。。</p>
+<h3 id="2-配置http反向代理"><a href="#2-配置http反向代理" class="headerlink" title="2. 配置http反向代理"></a>2. 配置http反向代理</h3><h3 id="3-配置文件服务器"><a href="#3-配置文件服务器" class="headerlink" title="3. 配置文件服务器"></a>3. 配置文件服务器</h3><h3 id="4-前后端静态分离"><a href="#4-前后端静态分离" class="headerlink" title="4. 前后端静态分离"></a>4. 前后端静态分离</h3><h3 id="5-搭建静态站点服务器"><a href="#5-搭建静态站点服务器" class="headerlink" title="5. 搭建静态站点服务器"></a>5. 搭建静态站点服务器</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/09/spring-eureka源码学习（下）/" rel="next" title="spring eureka源码学习（下）">
+                <i class="fa fa-chevron-left"></i> spring eureka源码学习（下）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/1.jpg"
+                alt="张澧枫" />
+            
+              <p class="site-author-name" itemprop="name">张澧枫</p>
+              <p class="site-description motion-element" itemprop="description">java学习点滴</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx使用与入门"><span class="nav-number">1.</span> <span class="nav-text">nginx使用与入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-nginx部署与安装"><span class="nav-number">1.1.</span> <span class="nav-text">1. nginx部署与安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-nginx-conf模块配置"><span class="nav-number">1.2.</span> <span class="nav-text">2. nginx.conf模块配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#日志配置"><span class="nav-number">1.2.1.</span> <span class="nav-text">#日志配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context"><span class="nav-number">1.2.2.</span> <span class="nav-text">#Context</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#events"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">#events</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">#http</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Http负载均衡（7层负载均衡）"><span class="nav-number">1.3.</span> <span class="nav-text">3. Http负载均衡（7层负载均衡）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本使用"><span class="nav-number">1.3.1.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择负载均衡方法"><span class="nav-number">1.3.2.</span> <span class="nav-text">选择负载均衡方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Round-Robin（轮询）"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">1. Round Robin（轮询）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Least-Connections（最少连接数）"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2. Least Connections（最少连接数）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-IP-hash"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">3. IP hash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-通用hash"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">4. 通用hash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-least-time-最少连接时长"><span class="nav-number">1.3.2.5.</span> <span class="nav-text">5. least time(最少连接时长)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-随机"><span class="nav-number">1.3.2.6.</span> <span class="nav-text">6. 随机</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-TCP和UDP负载均衡（4层负载均衡）"><span class="nav-number">1.4.</span> <span class="nav-text">4. TCP和UDP负载均衡（4层负载均衡）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置使用"><span class="nav-number">1.4.1.</span> <span class="nav-text">配置使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-nginx基础命令"><span class="nav-number">1.5.</span> <span class="nav-text">5. nginx基础命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-nginx常用配置"><span class="nav-number">1.6.</span> <span class="nav-text">6. nginx常用配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-nginx负载均衡配置"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. nginx负载均衡配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-配置http反向代理"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 配置http反向代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-配置文件服务器"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. 配置文件服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-前后端静态分离"><span class="nav-number">1.6.4.</span> <span class="nav-text">4. 前后端静态分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-搭建静态站点服务器"><span class="nav-number">1.6.5.</span> <span class="nav-text">5. 搭建静态站点服务器</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">张澧枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
