@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="一个杯子">
 <meta property="og:description" content="nginx使用与入门 参考：https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/  1. nginx部署与安装此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。 2. nginx.conf模块配置配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下： 12345">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-19T08:19:47.034Z">
+<meta property="og:updated_time" content="2019-06-20T01:20:45.989Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nginx使用与入门">
 <meta name="twitter:description" content="nginx使用与入门 参考：https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/  1. nginx部署与安装此部分暂时省略，请详细阅读官方文档，如有需要后续会补充。 2. nginx.conf模块配置配置文件为分块结构，详细指令后接对应参数，参数后会有一个分号结尾。通用结构大体如下： 12345">
@@ -536,7 +536,173 @@ stream{
 <li>nginx -V            显示 nginx 的版本，编译器版本和配置参数。</li>
 </ul>
 <h2 id="6-nginx常用配置"><a href="#6-nginx常用配置" class="headerlink" title="6. nginx常用配置"></a>6. nginx常用配置</h2><h3 id="1-nginx负载均衡配置"><a href="#1-nginx负载均衡配置" class="headerlink" title="1. nginx负载均衡配置"></a>1. nginx负载均衡配置</h3><p>上面基本已经介绍了，略过。。</p>
-<h3 id="2-配置http反向代理"><a href="#2-配置http反向代理" class="headerlink" title="2. 配置http反向代理"></a>2. 配置http反向代理</h3><h3 id="3-配置文件服务器"><a href="#3-配置文件服务器" class="headerlink" title="3. 配置文件服务器"></a>3. 配置文件服务器</h3><h3 id="4-前后端静态分离"><a href="#4-前后端静态分离" class="headerlink" title="4. 前后端静态分离"></a>4. 前后端静态分离</h3><h3 id="5-搭建静态站点服务器"><a href="#5-搭建静态站点服务器" class="headerlink" title="5. 搭建静态站点服务器"></a>5. 搭建静态站点服务器</h3>
+<h3 id="2-配置http反向代理"><a href="#2-配置http反向代理" class="headerlink" title="2. 配置http反向代理"></a>2. 配置http反向代理</h3><pre><code>#运行用户
+#user somebody;
+
+#启动进程,通常设置成和cpu的数量相等
+worker_processes  1;
+
+#全局错误日志
+error_log  D:/Tools/nginx-1.10.1/logs/error.log;
+error_log  D:/Tools/nginx-1.10.1/logs/notice.log  notice;
+error_log  D:/Tools/nginx-1.10.1/logs/info.log  info;
+
+#PID文件，记录当前启动的nginx的进程ID
+pid        D:/Tools/nginx-1.10.1/logs/nginx.pid;
+
+#工作模式及连接数上限
+events {
+    worker_connections 1024;    #单个后台worker process进程的最大并发链接数
+}
+
+#设定http服务器，利用它的反向代理功能提供负载均衡支持
+http {
+    #设定mime类型(邮件支持类型),类型由mime.types文件定义
+    include       D:/Tools/nginx-1.10.1/conf/mime.types;
+    default_type  application/octet-stream;
+
+    #设定日志
+    log_format  main  &apos;[$remote_addr] - [$remote_user] [$time_local] &quot;$request&quot; &apos;
+                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;
+                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;
+
+    access_log    D:/Tools/nginx-1.10.1/logs/access.log main;
+    rewrite_log     on;
+
+    #sendfile 指令指定 nginx 是否调用 sendfile 函数（zero copy 方式）来输出文件，对于普通应用，
+    #必须设为 on,如果用来进行下载等应用磁盘IO重负载应用，可设置为 off，以平衡磁盘与网络I/O处理速度，降低系统的uptime.
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #连接超时时间
+    keepalive_timeout  120;
+    tcp_nodelay        on;
+
+    #gzip压缩开关，。压缩传输的字节大小
+    gzip  on;
+
+    #设定实际的服务器列表
+    upstream zp_server1{
+        server 127.0.0.1:8089;
+    }
+
+    #HTTP服务器
+    server {
+        #监听80端口，80端口是知名端口号，用于HTTP协议
+        listen       80;
+
+        #定义使用www.xx.com访问
+        server_name  www.helloworld.com;
+
+        #首页
+        index index.html
+
+        #指向webapp的目录
+        root D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp;
+
+        #编码格式
+        charset utf-8;
+
+        #代理配置参数
+        proxy_connect_timeout 180;
+        proxy_send_timeout 180;
+        proxy_read_timeout 180;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarder-For $remote_addr;
+
+        #反向代理的路径（和upstream绑定），location 后面设置映射的路径
+        location / {
+            proxy_pass http://zp_server1;
+        }
+
+        #静态文件，nginx自己处理
+        location ~ ^/(images|javascript|js|css|flash|media|static)/ {
+            root D:\01_Workspace\Project\github\zp\SpringNotes\spring-security\spring-shiro\src\main\webapp\views;
+            #过期30天，静态文件不怎么更新，过期可以设大一点，如果频繁更新，则可以设置得小一点。
+            expires 30d;
+        }
+
+        #设定查看Nginx状态的地址
+        location /NginxStatus {
+            stub_status           on;
+            access_log            on;
+            auth_basic            &quot;NginxStatus&quot;;
+            auth_basic_user_file  conf/htpasswd;
+        }
+
+        #禁止访问 .htxxx 文件
+        location ~ /\.ht {
+            deny all;
+        }
+
+        #错误处理页面（可选择性配置）
+        #error_page   404              /404.html;
+        #error_page   500 502 503 504  /50x.html;
+        #location = /50x.html {
+        #    root   html;
+        #}
+    }
+}
+</code></pre><h3 id="3-配置文件服务器"><a href="#3-配置文件服务器" class="headerlink" title="3. 配置文件服务器"></a>3. 配置文件服务器</h3><pre><code>autoindex on;# 显示目录
+autoindex_exact_size on;# 显示文件大小
+autoindex_localtime on;# 显示文件时间
+
+server {
+    charset      utf-8,gbk; # windows 服务器下设置后，依然乱码，暂时无解
+    listen       9050 default_server;
+    server_name  _;
+    #设置根目录
+    root         /share/fs;
+}
+</code></pre><h3 id="4-前后端静态分离"><a href="#4-前后端静态分离" class="headerlink" title="4. 前后端静态分离"></a>4. 前后端静态分离</h3><pre><code>http{
+    upstream backend {
+      server 127.0.0.1:9040;
+    }
+
+    server {
+      listen       80;
+      server_name  www.demo04.com;
+
+      # windows 下前后端分离场景，使用相对路径无法被识别，暂时搞不定
+      root D:/Codes/ZP/Others/nginx-tutorial/demos/reactapp/dist;
+      #响应后台请求
+      location ~ ^/api/ {
+        proxy_pass http://backend;
+        #重写请求uri格式
+        rewrite &quot;^/api/(.*)$&quot; /$1 break;
+      }
+
+      location ~* \.   (json|txt|js|css|jpg|jpeg|gif|png|svg|ico|eot|otf|woff|woff2|ttf)$ {}
+    }
+}
+</code></pre><h3 id="5-搭建静态站点服务器"><a href="#5-搭建静态站点服务器" class="headerlink" title="5. 搭建静态站点服务器"></a>5. 搭建静态站点服务器</h3><pre><code>worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    #gzip开启可以压缩字节大小
+    gzip on;
+    gzip_types text/plain application/x-javascript text/css application/xml text/javascript application/javascript image/jpeg image/gif image/png;
+    gzip_vary on;
+
+    server {
+        listen       80;
+        server_name  static.zp.cn;
+
+        location / {
+            root /app/dist;
+            index index.html;
+            #转发任何请求到 index.html
+        }
+    }
+}
+</code></pre>
       
     </div>
     
