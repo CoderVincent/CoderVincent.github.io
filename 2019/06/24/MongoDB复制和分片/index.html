@@ -79,21 +79,18 @@
 
 
 
-<meta name="description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  快速预览String对象底层编码有int、raw或者embstr，如果存整数用int、存字符串但是长度较长用raw、存字符串但是长度较短用embstr。哈希对象的底层编码可以用ziplist和hash">
+<meta name="description" content="MongoDB复制和分片 参考：《MongoDB权威指南》  搭建MongoDB集群有三种方式，分别是主从复制、副本集和分片，搭建的难度也是递增的 搭建一个MongoDB集群 参考: https://blog.csdn.net/luonanqin/article/details/8497860  本节将讲述搭建三种不同集群的具体步骤 1. 主从复制主从复制是最简单的一种搭建MongoDB的方式，可">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis数据结构与底层实现">
-<meta property="og:url" content="http://yoursite.com/2019/01/02/redis数据结构与底层实现/index.html">
+<meta property="og:title" content="MongoDB复制和分片">
+<meta property="og:url" content="http://yoursite.com/2019/06/24/MongoDB复制和分片/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  快速预览String对象底层编码有int、raw或者embstr，如果存整数用int、存字符串但是长度较长用raw、存字符串但是长度较短用embstr。哈希对象的底层编码可以用ziplist和hash">
+<meta property="og:description" content="MongoDB复制和分片 参考：《MongoDB权威指南》  搭建MongoDB集群有三种方式，分别是主从复制、副本集和分片，搭建的难度也是递增的 搭建一个MongoDB集群 参考: https://blog.csdn.net/luonanqin/article/details/8497860  本节将讲述搭建三种不同集群的具体步骤 1. 主从复制主从复制是最简单的一种搭建MongoDB的方式，可">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/uploads/String-raw.png">
-<meta property="og:image" content="http://yoursite.com/uploads/String-embstr.png">
-<meta property="og:updated_time" content="2019-05-12T12:15:57.410Z">
+<meta property="og:updated_time" content="2019-06-25T03:29:19.414Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="redis数据结构与底层实现">
-<meta name="twitter:description" content="redis数据结构和底层实现 参考书籍：《redis设计与实现》  1. redis基本数据结构 String，字符串 Hash，字典 List，列表 Set，集合 Sorted Set，有序集合  快速预览String对象底层编码有int、raw或者embstr，如果存整数用int、存字符串但是长度较长用raw、存字符串但是长度较短用embstr。哈希对象的底层编码可以用ziplist和hash">
-<meta name="twitter:image" content="http://yoursite.com/uploads/String-raw.png">
+<meta name="twitter:title" content="MongoDB复制和分片">
+<meta name="twitter:description" content="MongoDB复制和分片 参考：《MongoDB权威指南》  搭建MongoDB集群有三种方式，分别是主从复制、副本集和分片，搭建的难度也是递增的 搭建一个MongoDB集群 参考: https://blog.csdn.net/luonanqin/article/details/8497860  本节将讲述搭建三种不同集群的具体步骤 1. 主从复制主从复制是最简单的一种搭建MongoDB的方式，可">
 
 
 
@@ -123,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/01/02/redis数据结构与底层实现/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/06/24/MongoDB复制和分片/"/>
 
 
 
 
 
-  <title>redis数据结构与底层实现 | 一个杯子</title>
+  <title>MongoDB复制和分片 | 一个杯子</title>
   
 
 
@@ -246,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/02/redis数据结构与底层实现/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/24/MongoDB复制和分片/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -263,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">redis数据结构与底层实现</h1>
+          <h1 class="post-title" itemprop="name headline">MongoDB复制和分片</h1>
         
 
         <div class="post-meta">
@@ -275,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-02T15:13:59+08:00">
-                2019-01-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-24T11:03:28+08:00">
+                2019-06-24
               </time>
             
 
@@ -298,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
+                  <a href="/categories/MongoDB/" itemprop="url" rel="index">
+                    <span itemprop="name">MongoDB</span>
                   </a>
                 </span>
 
@@ -335,45 +332,105 @@
       
 
       
-        <h1 id="redis数据结构和底层实现"><a href="#redis数据结构和底层实现" class="headerlink" title="redis数据结构和底层实现"></a>redis数据结构和底层实现</h1><blockquote>
-<p>参考书籍：《redis设计与实现》</p>
+        <h1 id="MongoDB复制和分片"><a href="#MongoDB复制和分片" class="headerlink" title="MongoDB复制和分片"></a>MongoDB复制和分片</h1><blockquote>
+<p>参考：《MongoDB权威指南》</p>
 </blockquote>
-<h2 id="1-redis基本数据结构"><a href="#1-redis基本数据结构" class="headerlink" title="1. redis基本数据结构"></a>1. redis基本数据结构</h2><ol>
-<li>String，字符串</li>
-<li>Hash，字典</li>
-<li>List，列表</li>
-<li>Set，集合</li>
-<li>Sorted Set，有序集合</li>
-</ol>
-<h3 id="快速预览"><a href="#快速预览" class="headerlink" title="快速预览"></a>快速预览</h3><p>String对象底层编码有int、raw或者embstr，如果存整数用int、存字符串但是长度较长用raw、存字符串但是长度较短用embstr。<br>哈希对象的底层编码可以用ziplist和hashtable，根据键值对字符串长度和数量选择，短而少选前者，否则反之。<br>列表对象的底层编码可以是ziplist或者linkedlist，同样根据保存元素的长度和数量选择二者，短而少就选ziplist，否则反之。<br>集合对象的底层编码可以是intlist或者hashtable，如果说元素全部是整数且个数小于512就选择intlist，否则选择hashtable。<br>有序集合的底层编码可以是ziplist或者skiplist+dict，同样ziplist适合元素短而少的场景。</p>
-<h2 id="2-String对象使用场景与底层实现"><a href="#2-String对象使用场景与底层实现" class="headerlink" title="2. String对象使用场景与底层实现"></a>2. String对象使用场景与底层实现</h2><h3 id="1-使用场景"><a href="#1-使用场景" class="headerlink" title="1.使用场景"></a>1.使用场景</h3><p>简单的key-value类型，value不仅可以是字符串还可以是数字。</p>
-<ul>
-<li>原子计数器</li>
-<li>支持append</li>
-<li>支持O(1)时间获取字符串长度</li>
-<li>支持获取子串</li>
-</ul>
-<h3 id="2-底层实现"><a href="#2-底层实现" class="headerlink" title="2. 底层实现"></a>2. 底层实现</h3><p>String对象的底层编码可以使用int、raw或者embstr实现。</p>
-<h4 id="1-int编码"><a href="#1-int编码" class="headerlink" title="1. int编码"></a>1. int编码</h4><p>如果一个字符串对象保存的是整数值，并且这个整数值可以使用long类型来表示，那么字符串对象的底层编码就可以设置为<strong>int</strong>。</p>
-<h4 id="2-raw编码"><a href="#2-raw编码" class="headerlink" title="2. raw编码"></a>2. raw编码</h4><p>如果一个字符串对象保存的是字符串值，且这个字符串值的长度大于32字节，那么字符串对象将使用raw编码的方式来保存这个字符串值。<br>字符串对象将使用一个简单动态字符串（SDS）来保存这个字符串值，并将这个对象编码设置为raw.</p>
-<p><img src="/uploads/String-raw.png" alt="string-raw" title="string-raw"></p>
-<h4 id="3-embstr编码"><a href="#3-embstr编码" class="headerlink" title="3. embstr编码"></a>3. embstr编码</h4><p>如果一个字符串对象保存的是字符串值，且这个字符串值的长度小于等于32字节，那么字符串对象将使用embstr编码的方式来保存这个字符串值。embstr同样使用sds实现，和raw的区别是</p>
-<ul>
-<li>embstr是一种专门用于保存短字符串的优化编码方法，embstr分配的内存空间是连续的。</li>
-<li>embstr创建字符串的内存分配次数由raw的两次降为一次，释放时也只需要调用一次内存释放函数.</li>
-<li>embstr比raw能更好的利用连续内存作缓存.</li>
-</ul>
-<p><img src="/uploads/String-embstr.png" alt="String-embstr" title="String-embstr"></p>
-<h4 id="编码转换注意事项"><a href="#编码转换注意事项" class="headerlink" title="编码转换注意事项"></a>编码转换注意事项</h4><ul>
-<li>long/double类型的数据是作为字符串来存储的，只有在使用的时候才会换回浮点数计算</li>
-<li>embstr编码对象做任何修改都会先换回raw类型</li>
-</ul>
-<h2 id="3-哈希对象使用场景与底层实现"><a href="#3-哈希对象使用场景与底层实现" class="headerlink" title="3. 哈希对象使用场景与底层实现"></a>3. 哈希对象使用场景与底层实现</h2><p>哈希对象的底层实现有ziplist和hashtable，键值对长度小数量少的时候用ziplist，</p>
-<p>## </p>
-<blockquote>
-<p>未完待续……</p>
+<p>搭建MongoDB集群有三种方式，分别是<strong>主从复制</strong>、<strong>副本集</strong>和<strong>分片</strong>，搭建的难度也是递增的</p>
+<h2 id="搭建一个MongoDB集群"><a href="#搭建一个MongoDB集群" class="headerlink" title="搭建一个MongoDB集群"></a>搭建一个MongoDB集群</h2><blockquote>
+<p>参考: <a href="https://blog.csdn.net/luonanqin/article/details/8497860" target="_blank" rel="noopener">https://blog.csdn.net/luonanqin/article/details/8497860</a></p>
 </blockquote>
+<p>本节将讲述搭建三种不同集群的具体步骤</p>
+<h3 id="1-主从复制"><a href="#1-主从复制" class="headerlink" title="1. 主从复制"></a>1. 主从复制</h3><p>主从复制是最简单的一种搭建MongoDB的方式，可以是一主一从，也可以是一主多从。</p>
+<pre><code>./mongod --master --dbpath 主节点数据地址  --port 10000  #主节点
+./mongod --slave --dbpath 从节点数据地址  --port 10001  --source localhost:10000 #从节点
+</code></pre><p>如上就在同一台主机上搭建了一主一从的MongoDB集群，这种方式的优点是简单、灵活，缺点是只允许主节点作数据更新操作，一旦主节点宕机服务将不可用。这种方式MongoDB官方已经不推荐。</p>
+<h3 id="2-副本集"><a href="#2-副本集" class="headerlink" title="2. 副本集"></a>2. 副本集</h3><p>首先，建立数据文件夹</p>
+<pre><code>mkdir -p /mongodb/data/master 
+mkdir -p /mongodb/data/slaver 
+mkdir -p /mongodb/data/arbiter  
+</code></pre><p>其次，创建主备和仲裁节点配置文件</p>
+<pre><code>#master.conf
+dbpath=/mongodb/data/master
+logpath=/mongodb/log/master.log
+pidfilepath=/mongodb/master.pid
+directoryperdb=true
+logappend=true
+replSet=testrs
+bind_ip=10.10.148.130
+port=27017
+oplogSize=10000
+fork=true
+noprealloc=true
 
+
+#slaver.conf
+dbpath=/mongodb/data/slaver
+logpath=/mongodb/log/slaver.log
+pidfilepath=/mongodb/slaver.pid
+directoryperdb=true
+logappend=true
+replSet=testrs
+bind_ip=10.10.148.131
+port=27017
+oplogSize=10000
+fork=true
+noprealloc=true
+
+
+#arbiter.conf
+dbpath=/mongodb/data/arbiter
+logpath=/mongodb/log/arbiter.log
+pidfilepath=/mongodb/arbiter.pid
+directoryperdb=true
+logappend=true
+replSet=testrs
+bind_ip=10.10.148.132
+port=27017
+oplogSize=10000
+fork=true
+noprealloc=true
+</code></pre><p>然后，进入每个mongod的bin文件启动MongoDB</p>
+<pre><code>./monood -f master.conf
+./mongod -f slaver.conf
+./mongod -f arbiter.conf
+</code></pre><p>最后，在Mongo Shell中配置config集合</p>
+<pre><code>./mongo 10.10.148.130:27017   #ip和port是某个节点的地址
+&gt;use admin
+&gt;cfg={ _id:&quot;testrs&quot;, members:[ {_id:0,host:&apos;10.10.148.130:27017&apos;,priority:2}, {_id:1,host:&apos;10.10.148.131:27017&apos;,priority:1}, 
+{_id:2,host:&apos;10.10.148.132:27017&apos;,arbiterOnly:true}] };
+&gt;rs.initiate(cfg)             #使配置生效
+</code></pre><h3 id="3-分片"><a href="#3-分片" class="headerlink" title="3. 分片"></a>3. 分片</h3><p>首先，启动三个数据节点</p>
+<pre><code>./mongod --fork --dbpath ../data/set1/ --logpath ../log/set1.log --replSet test #192.168.4.43
+./mongod --fork --dbpath ../data/set2/ --logpath ../log/set2.log --replSet test #192.168.4.44
+./mongod --fork --dbpath ../data/set3/ --logpath ../log/set3.log --replSet test #192.168.4.45 决策 不存储数据
+</code></pre><p>其次，启动配置节点</p>
+<pre><code>./mongod --configsvr --dbpath ../config/set1/ --port 20001 --fork --logpath ../log/conf1.log #192.168.4.30
+./mongod --configsvr --dbpath ../config/set2/ --port 20002 --fork --logpath ../log/conf2.log #192.168.4.31
+</code></pre><p>然后，启动路由节点</p>
+<pre><code>./mongos --configdb 192.168.4.30:20001,192.168.4.31:20002 --port 27017 --fork --logpath ../log/root.log #192.168.4.29
+</code></pre><p>然后，配置副本集</p>
+<pre><code>./mongo 192.168.4.43:27017   #ip和port是某个节点的地址
+&gt;use admin
+&gt;cfg={ _id:&quot;testrs&quot;, members:[ {_id:0,host:&apos;192.168.4.43:27017&apos;,priority:2}, {_id:1,host:&apos;192.168.4.44:27017&apos;,priority:1}, 
+{_id:2,host:&apos;192.168.4.45:27017&apos;,arbiterOnly:true}] };
+&gt;rs.initiate(cfg)             #使配置生效
+</code></pre><p>最后，配置sharding</p>
+<pre><code>./mongo 192.168.4.29:27017   #这里必须连接路由节点
+&gt;sh.addShard(&quot;test/192.168.4.43:27017&quot;) #test表示replica set的名字 当把主节点添加到shard以后，会自动找到set里的主，备，决策节点
+&gt;db.runCommand({enableSharding:&quot;diameter_test&quot;})    #diameter_test is database name
+&gt;db.runCommand( { shardCollection: &quot;diameter_test.dcca_dccr_test&quot;,key:{&quot;__avpSessionId&quot;:1}}) 
+</code></pre><h2 id="查询与索引"><a href="#查询与索引" class="headerlink" title="查询与索引"></a>查询与索引</h2><p>查询的基础使用不再赘述</p>
+<h3 id="游标"><a href="#游标" class="headerlink" title="游标"></a>游标</h3><p>游标不是查询结果,可以理解为数据在遍历过程中的内部指针,其返回的是一个资源,或者说数据读取接口.客户端通过对游标进行一些设置就能对查询结果进行有效地控制，如可以限制查询得到的结果数量、跳过部分结果、或对结果集按任意键进行排序等！当使用find的时候，shell并不立即查询数据库，而是返回一个游标，这样用户可以给查询附加额外的限制，如limit、skip和sort。</p>
+<ul>
+<li>不使用skip做分页的方法：比如按照date降序显示文档，可以限制获取第一页，然后用最后一个值作为查询条件再限制获取查询第二页，依次类推。</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>创建索引：<code>&gt; db.ensureIndex({&quot;date&quot;:1})</code> 表示给date建创建一个顺序方向检索的索引</p>
+<ul>
+<li>同样遵循前缀原则：比如有一个索引{“a”:1,”b”:1,….”z”:1},那么对于{“a”:1},{“a”:1,”b”:1},{“a”:1,”b”:1,”c”:1}等有效，对于{“b”:1},{“a”:1,”c”:1}之类无效。</li>
+<li>扩展索引：如果有数百万的用户，每人每天有数十条状态更新。那么对于每次最新状态的查询，数据库都会将不同的页载入内存，所以要改变索引的顺序，尽量将查询比较多的页存入内存。</li>
+<li>创建索引的思考：索引字段是否是查询中常用到的字段，方向是否合适？</li>
+</ul>
+<h3 id="mongodb内存"><a href="#mongodb内存" class="headerlink" title="mongodb内存"></a>mongodb内存</h3>
       
     </div>
     
@@ -397,8 +454,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/15/java内存模型/" rel="next" title="java内存模型">
-                <i class="fa fa-chevron-left"></i> java内存模型
+              <a href="/2019/06/20/nginx原理深入/" rel="next" title="nginx原理深入">
+                <i class="fa fa-chevron-left"></i> nginx原理深入
               </a>
             
           </div>
@@ -406,10 +463,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/02/16/大型网站技术架构/" rel="prev" title="大型网站技术架构">
-                大型网站技术架构 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -536,7 +589,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis数据结构和底层实现"><span class="nav-number">1.</span> <span class="nav-text">redis数据结构和底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-redis基本数据结构"><span class="nav-number">1.1.</span> <span class="nav-text">1. redis基本数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#快速预览"><span class="nav-number">1.1.1.</span> <span class="nav-text">快速预览</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-String对象使用场景与底层实现"><span class="nav-number">1.2.</span> <span class="nav-text">2. String对象使用场景与底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-使用场景"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-底层实现"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-int编码"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">1. int编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-raw编码"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2. raw编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-embstr编码"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">3. embstr编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编码转换注意事项"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">编码转换注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-哈希对象使用场景与底层实现"><span class="nav-number">1.3.</span> <span class="nav-text">3. 哈希对象使用场景与底层实现</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB复制和分片"><span class="nav-number">1.</span> <span class="nav-text">MongoDB复制和分片</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建一个MongoDB集群"><span class="nav-number">1.1.</span> <span class="nav-text">搭建一个MongoDB集群</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-主从复制"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 主从复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-副本集"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 副本集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-分片"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 分片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询与索引"><span class="nav-number">1.2.</span> <span class="nav-text">查询与索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#游标"><span class="nav-number">1.2.1.</span> <span class="nav-text">游标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引"><span class="nav-number">1.2.2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb内存"><span class="nav-number">1.2.3.</span> <span class="nav-text">mongodb内存</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
