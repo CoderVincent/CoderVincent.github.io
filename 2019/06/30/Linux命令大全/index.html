@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="redis实现分布式锁 最近面试，被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变得“">
+<meta name="description" content="Linux命令大全 参考：《鸟哥Linux的私房菜》  # 目录1. 系统资源查看命令2. 文件与进程相关命令3. 网络与进程相关命令4. 磁盘相关命令5. 压缩、ACL控制等工具命令 1. 系统资源查看命令一.查看系统整体负载：w,uptime,top [root@ScuCloud2532_15:33:30 /root]#w 15:44:13 up 202 days,  1:09,  1 use">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis如何实现分布式锁">
-<meta property="og:url" content="http://yoursite.com/2019/03/15/redis如何实现分布式锁/index.html">
+<meta property="og:title" content="Linux命令大全">
+<meta property="og:url" content="http://yoursite.com/2019/06/30/Linux命令大全/index.html">
 <meta property="og:site_name" content="一个杯子">
-<meta property="og:description" content="redis实现分布式锁 最近面试，被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变得“">
+<meta property="og:description" content="Linux命令大全 参考：《鸟哥Linux的私房菜》  # 目录1. 系统资源查看命令2. 文件与进程相关命令3. 网络与进程相关命令4. 磁盘相关命令5. 压缩、ACL控制等工具命令 1. 系统资源查看命令一.查看系统整体负载：w,uptime,top [root@ScuCloud2532_15:33:30 /root]#w 15:44:13 up 202 days,  1:09,  1 use">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-04-01T12:29:47.515Z">
+<meta property="og:updated_time" content="2019-06-30T09:37:10.417Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="redis如何实现分布式锁">
-<meta name="twitter:description" content="redis实现分布式锁 最近面试，被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。  1. 版本1加锁：setNX（）设置超时时间：expire（）解锁：del（key）问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。 2. 版本2加锁+设置超时时间：set（key，1，expireTIme，NX）解决了线程还未来得及设置超时时间就挂掉，锁变得“">
+<meta name="twitter:title" content="Linux命令大全">
+<meta name="twitter:description" content="Linux命令大全 参考：《鸟哥Linux的私房菜》  # 目录1. 系统资源查看命令2. 文件与进程相关命令3. 网络与进程相关命令4. 磁盘相关命令5. 压缩、ACL控制等工具命令 1. 系统资源查看命令一.查看系统整体负载：w,uptime,top [root@ScuCloud2532_15:33:30 /root]#w 15:44:13 up 202 days,  1:09,  1 use">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/15/redis如何实现分布式锁/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/06/30/Linux命令大全/"/>
 
 
 
 
 
-  <title>redis如何实现分布式锁 | 一个杯子</title>
+  <title>Linux命令大全 | 一个杯子</title>
   
 
 
@@ -243,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/15/redis如何实现分布式锁/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/30/Linux命令大全/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张澧枫">
@@ -260,7 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">redis如何实现分布式锁</h1>
+          <h1 class="post-title" itemprop="name headline">Linux命令大全</h1>
         
 
         <div class="post-meta">
@@ -272,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-15T20:54:49+08:00">
-                2019-03-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-30T15:34:47+08:00">
+                2019-06-30
               </time>
             
 
@@ -295,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
                   </a>
                 </span>
 
@@ -332,19 +332,99 @@
       
 
       
-        <h1 id="redis实现分布式锁"><a href="#redis实现分布式锁" class="headerlink" title="redis实现分布式锁"></a>redis实现分布式锁</h1><blockquote>
-<p>最近面试，被问到分布式锁，在网上看到程序员小灰的漫画解读后觉得理解了一些，再次记录一下文字过程。</p>
+        <h1 id="Linux命令大全"><a href="#Linux命令大全" class="headerlink" title="Linux命令大全"></a>Linux命令大全</h1><blockquote>
+<p>参考：《鸟哥Linux的私房菜》</p>
 </blockquote>
-<h2 id="1-版本1"><a href="#1-版本1" class="headerlink" title="1. 版本1"></a>1. 版本1</h2><h3 id="加锁：setNX（）"><a href="#加锁：setNX（）" class="headerlink" title="加锁：setNX（）"></a>加锁：setNX（）</h3><h3 id="设置超时时间：expire（）"><a href="#设置超时时间：expire（）" class="headerlink" title="设置超时时间：expire（）"></a>设置超时时间：expire（）</h3><h3 id="解锁：del（key）"><a href="#解锁：del（key）" class="headerlink" title="解锁：del（key）"></a>解锁：del（key）</h3><p>问题所在：加锁和设置超时时间不是原子操作，有线程不安全的风险。</p>
-<h2 id="2-版本2"><a href="#2-版本2" class="headerlink" title="2. 版本2"></a>2. 版本2</h2><h3 id="加锁-设置超时时间：set（key，1，expireTIme，NX）"><a href="#加锁-设置超时时间：set（key，1，expireTIme，NX）" class="headerlink" title="加锁+设置超时时间：set（key，1，expireTIme，NX）"></a>加锁+设置超时时间：set（key，1，expireTIme，NX）</h3><p>解决了线程还未来得及设置超时时间就挂掉，锁变得“长生不老”的问题。</p>
-<p>问题所在：不支持可重入，有并发风险，有误删其他线程锁的风险</p>
-<h2 id="3-版本3"><a href="#3-版本3" class="headerlink" title="3. 版本3"></a>3. 版本3</h2><h3 id="加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）"><a href="#加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）" class="headerlink" title="加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）"></a>加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）</h3><p>解决了可重入和误删风险。<br>问题所在：判断锁和解锁不是原子操作，还是有并发风险。</p>
-<h2 id="4-版本4"><a href="#4-版本4" class="headerlink" title="4. 版本4"></a>4. 版本4</h2><h3 id="使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"><a href="#使用lua脚本，可以组合多个命令，将判断和解决变为原子操作" class="headerlink" title="使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"></a>使用lua脚本，可以组合多个命令，将判断和解决变为原子操作</h3><h2 id="5-版本5"><a href="#5-版本5" class="headerlink" title="5. 版本5"></a>5. 版本5</h2><h3 id="使用守护线程"><a href="#使用守护线程" class="headerlink" title="使用守护线程"></a>使用守护线程</h3><p>每个应用抢占锁成功后开启一个守护线程，守护线程用来在应用还没执行完锁快到期时给应用“加油”（延长到期时间），应用和守护线程共生死，否则会出现死锁问题。</p>
-<blockquote>
-<p>这一篇原本写了很长，由于使用的在线编辑器，一个不小心点了某个连接~导致文章内容丢失。。。。于是写的简略了些，记录过程。</p>
-</blockquote>
-<p><a href="https://juejin.im/post/5b16148a518825136137c8db" title="什么是分布式" target="_blank" rel="noopener">什么是分布式</a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="# 目录"></a># 目录</h2><h3 id="1-系统资源查看命令"><a href="#1-系统资源查看命令" class="headerlink" title="1. 系统资源查看命令"></a>1. 系统资源查看命令</h3><h3 id="2-文件与进程相关命令"><a href="#2-文件与进程相关命令" class="headerlink" title="2. 文件与进程相关命令"></a>2. 文件与进程相关命令</h3><h3 id="3-网络与进程相关命令"><a href="#3-网络与进程相关命令" class="headerlink" title="3. 网络与进程相关命令"></a>3. 网络与进程相关命令</h3><h3 id="4-磁盘相关命令"><a href="#4-磁盘相关命令" class="headerlink" title="4. 磁盘相关命令"></a>4. 磁盘相关命令</h3><h3 id="5-压缩、ACL控制等工具命令"><a href="#5-压缩、ACL控制等工具命令" class="headerlink" title="5. 压缩、ACL控制等工具命令"></a>5. 压缩、ACL控制等工具命令</h3><hr>
+<h4 id="1-系统资源查看命令-1"><a href="#1-系统资源查看命令-1" class="headerlink" title="1. 系统资源查看命令"></a>1. 系统资源查看命令</h4><pre><code>一.查看系统整体负载：w,uptime,top
+[root@ScuCloud2532_15:33:30 /root]#w
+15:44:13 up 202 days,  1:09,  1 user,  load average: 0.06, 0.13, 0.08
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+root     pts/2    202.115.52.214   15:33    5.00s  0.06s  0.01s w
+[root@ScuCloud2532_15:44:13 /root]#uptime
+15:48:06 up 202 days,  1:13,  1 user,  load average: 0.28, 0.14, 0.09
 
+1.Linux的负载高，主要是由于CPU使用、内存使用、IO消耗三部分构成。任意一项使用过多，都将导致服务器负载的急剧攀升。
+2.负载在3左右说明负载均衡，大于5负载过高，load average反应1,5,15分钟负载平均值。
+
+#top提供了比w、uptime更多的信息，能够查看CPU/内存/IO的实时负载情况
+
+二.free命令查看内存详细内存负载情况
+[root@ScuCloud2532_15:59:40 /root]#free
+          total        used        free      shared  buff/cache   available
+Mem:        3881056     3349956      135324        1768      395776      196552
+Swap:      16777212     3372768    13404444
+
+1.free命令用来查看内存使用情况，包括物理内存和虚拟内存（swap）
+2.total是总大小，used是已使用大小，free是空余大小，buff/cache是内存缓冲区大小，available表示还可以被应用程序使用的物理大小
+3.free和available的区别是：free 是真正尚未被使用的物理内存数量,available是从应用程序的角度看到的可用内存数量，available = free + buff/cache。
+
+三. iostat查看更加具体的IO负载情况
+[root@ScuCloud2532_15:59:42 /root]#iostat
+Linux 3.10.0-862.9.1.el7.x86_64 (ScuCloud2532)     06/30/2019     _x86_64_    (4 CPU)
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.97    0.00    0.66    0.02    0.00   98.34
+
+Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+fd0               0.00         0.00         0.00         16          0
+sdb               0.00         0.00         0.00       1803       2093
+sda               3.68        11.55        26.95  201612820  470560389
+sdc               0.00         0.00         0.00       1040          0
+dm-0              1.36         3.07         2.35   53645104   41103892
+dm-1              0.00         0.00         0.00        599       209
+
+1. 关注iowait（cpu等待输入输出时间百分比）和idle（cpu空闲时间百分比），前者高说明硬盘存在IO瓶颈。后者高说明cpu较空闲
+2. 下面是每块硬盘的使用情况，可以看出sda和dm-0使用较多，参数分别显示了每块硬盘的读写速度以及读写总数
+
+四. netstat查看网络情况
+参考1：https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316661.html（详细但啰嗦）
+参考2：https://linux.cn/article-2434-1.html （直接告诉有哪些用法）
+
+五. 查看Linux机器信息
+参考：https://my.oschina.net/hunterli/blog/140783 （作查询使用）
+</code></pre><h4 id="2-文件与进程相关命令-1"><a href="#2-文件与进程相关命令-1" class="headerlink" title="2. 文件与进程相关命令"></a>2. 文件与进程相关命令</h4><pre><code>1. 常用命令
+参考：https://blog.csdn.net/Evankaka/article/details/49227669 （不是特别详细，有的命令需要自己找）
+#ls/ll（ll可以查看文件更详细信息）
+#cd
+#cp
+#mkdir
+#rm/rmdir(删除空目录)
+#mv(移动)
+#du(显示目前目录所占磁盘空间)
+#df（显示当前磁盘剩余空间）
+#cat（除了显示文件还可以合并两个文件到一个文件）
+#more（可以向后翻页），less（可以向前也可以向后翻页，比more强大）
+#tail（只看后n行，甚至可以实时监控某个文件）
+#head（只看前n行）
+#pwd
+#clear
+#grep（查找关键词）
+#find（满足各种奇葩的文件查找需求）
+#awk（比grep更强大，面试中常见）
+
+2. find命令
+参考：https://www.cnblogs.com/skynet/archive/2010/12/25/1916873.html （find和grep的详细用法）
+#用法：在一个目录（及子目录）中搜索文件，你可以指定一些匹配条件，如按文件名、文件类型、用户甚至是时间戳查找文件
+#常用表达：find [path...] [expression]
+#参数解释：
+- path:find命令所查找的目录路径
+- expression:限制条件和用来处理的shell（所以使用这个命令最好掌握一些shell脚本的写法）
+#使用举例：find ./ -size 0 -exec rm {} \;（删除大小为0的文件）
+#可以用作筛选条件的选项：文件名、文件权限、所属用户、文件更改时间、文件大小、文件类型等。
+
+3. grep命令
+#用法：grep能够使用正则表达式搜索文本并把匹配的文本行打印出来
+#常用表达：grep [OPTIONS] PATTERN [FILE...]
+grep的使用基础是正则表达式，学习这个命令最好的办法是创建一个文件，然后实际操作一遍。
+
+4. awk命令
+参考：https://www.cnblogs.com/ggjucheng/archive/2013/01/13/2858470.html （还挺详细的）
+#用法：awk是一个强大的文本分析工具，相对于grep的查找，sed的编辑，awk在其对数据分析并生成报告时，显得尤为强大。简单来说awk就是把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行各种分析处理。
+暂时不分析了，学完shell再来分析
+
+5. ps命令（非常常用的进程查看命令）
+</code></pre>
       
     </div>
     
@@ -368,8 +448,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/19/文件系统基础/" rel="next" title="文件系统基础">
-                <i class="fa fa-chevron-left"></i> 文件系统基础
+              <a href="/2019/06/24/MongoDB复制和分片/" rel="next" title="MongoDB复制和分片">
+                <i class="fa fa-chevron-left"></i> MongoDB复制和分片
               </a>
             
           </div>
@@ -377,10 +457,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/18/文件系统的实现/" rel="prev" title="文件系统的实现">
-                文件系统的实现 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -507,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis实现分布式锁"><span class="nav-number">1.</span> <span class="nav-text">redis实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-版本1"><span class="nav-number">1.1.</span> <span class="nav-text">1. 版本1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁：setNX（）"><span class="nav-number">1.1.1.</span> <span class="nav-text">加锁：setNX（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置超时时间：expire（）"><span class="nav-number">1.1.2.</span> <span class="nav-text">设置超时时间：expire（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解锁：del（key）"><span class="nav-number">1.1.3.</span> <span class="nav-text">解锁：del（key）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-版本2"><span class="nav-number">1.2.</span> <span class="nav-text">2. 版本2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁-设置超时时间：set（key，1，expireTIme，NX）"><span class="nav-number">1.2.1.</span> <span class="nav-text">加锁+设置超时时间：set（key，1，expireTIme，NX）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-版本3"><span class="nav-number">1.3.</span> <span class="nav-text">3. 版本3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁-设置超时时间-设置value为线程Id：set（key，ThreadId，expireTime，NX）"><span class="nav-number">1.3.1.</span> <span class="nav-text">加锁+设置超时时间+设置value为线程Id：set（key，ThreadId，expireTime，NX）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-版本4"><span class="nav-number">1.4.</span> <span class="nav-text">4. 版本4</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用lua脚本，可以组合多个命令，将判断和解决变为原子操作"><span class="nav-number">1.4.1.</span> <span class="nav-text">使用lua脚本，可以组合多个命令，将判断和解决变为原子操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-版本5"><span class="nav-number">1.5.</span> <span class="nav-text">5. 版本5</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用守护线程"><span class="nav-number">1.5.1.</span> <span class="nav-text">使用守护线程</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux命令大全"><span class="nav-number">1.</span> <span class="nav-text">Linux命令大全</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.1.</span> <span class="nav-text"># 目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-系统资源查看命令"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-文件与进程相关命令"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-网络与进程相关命令"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 网络与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-磁盘相关命令"><span class="nav-number">1.1.4.</span> <span class="nav-text">4. 磁盘相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-压缩、ACL控制等工具命令"><span class="nav-number">1.1.5.</span> <span class="nav-text">5. 压缩、ACL控制等工具命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-系统资源查看命令-1"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-文件与进程相关命令-1"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
