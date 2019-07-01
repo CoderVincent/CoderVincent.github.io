@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="一个杯子">
 <meta property="og:description" content="Linux命令大全 参考：《鸟哥Linux的私房菜》  # 目录1. 系统资源查看命令2. 文件与进程相关命令3. 网络与进程相关命令4. 磁盘相关命令5. 压缩、ACL控制等工具命令 1. 系统资源查看命令一.查看系统整体负载：w,uptime,top [root@ScuCloud2532_15:33:30 /root]#w 15:44:13 up 202 days,  1:09,  1 use">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-30T09:37:10.417Z">
+<meta property="og:updated_time" content="2019-07-01T02:10:40.792Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux命令大全">
 <meta name="twitter:description" content="Linux命令大全 参考：《鸟哥Linux的私房菜》  # 目录1. 系统资源查看命令2. 文件与进程相关命令3. 网络与进程相关命令4. 磁盘相关命令5. 压缩、ACL控制等工具命令 1. 系统资源查看命令一.查看系统整体负载：w,uptime,top [root@ScuCloud2532_15:33:30 /root]#w 15:44:13 up 202 days,  1:09,  1 use">
@@ -402,6 +402,9 @@ dm-1              0.00         0.00         0.00        599       209
 #grep（查找关键词）
 #find（满足各种奇葩的文件查找需求）
 #awk（比grep更强大，面试中常见）
+#touch（修改文件时间或创建新文件）
+#lsof（列出被进程所打开的文件名）
+
 
 2. find命令
 参考：https://www.cnblogs.com/skynet/archive/2010/12/25/1916873.html （find和grep的详细用法）
@@ -424,7 +427,40 @@ grep的使用基础是正则表达式，学习这个命令最好的办法是创�
 暂时不分析了，学完shell再来分析
 
 5. ps命令（非常常用的进程查看命令）
-</code></pre>
+#列出系统当前运行的进程快照
+#常用表达：ps [操作]，如ps -aux（通常会用一个管道符|结合grep查找某一个进程的pid）
+#使用举例：查找名为java的进程相关信息，ps -ef | grep java
+
+5. 查看某个执行命令某个进程相关的信息
+[root@ScuCloud2532_09:21:59 /root]#ps -ef|grep python
+root      1142     1  0  2018 ?        00:29:22 /usr/bin/python -Es /usr/sbin/tuned -l -P
+root      5516  2240  0 09:22 pts/2    00:00:00 grep --color=auto python
+[root@ScuCloud2532_09:22:07 /root]#ll /proc/1142
+total 0
+dr-xr-xr-x 2 root root 0 Jul  1 09:21 attr
+-rw-r--r-- 1 root root 0 Jul  1 09:21 autogroup
+-r-------- 1 root root 0 Jul  1 09:21 auxv
+-r--r--r-- 1 root root 0 Jul  1 09:21 cgroup
+--w------- 1 root root 0 Jul  1 09:21 clear_refs
+-r--r--r-- 1 root root 0 May 29 09:32 cmdline
+-rw-r--r-- 1 root root 0 Jul  1 09:21 comm
+-rw-r--r-- 1 root root 0 Jul  1 09:21 coredump_filter
+-r--r--r-- 1 root root 0 Jul  1 09:21 cpuset
+lrwxrwxrwx 1 root root 0 Jul  1 09:21 cwd -&gt; /
+-r-------- 1 root root 0 Jul  1 09:21 environ
+lrwxrwxrwx 1 root root 0 Jul  1 09:21 exe -&gt; /usr/bin/python2.7
+...
+
+- 首先通过ps命令找到属于python的进程pid
+- 然后用在/proc目录下找到1142这个pid的相关信息
+
+6. lsof命令
+#用法：lsof可以列出当前进程打开的文件
+#常用实例：
+- lsof 文件名：查看哪个进程再使用指定文件
+- lsof -p pid:查看指定进程打开了哪些文件
+- lsof -i:80：显示所有打开80端口的进程
+</code></pre><h4 id="3-网络与进程相关命令-1"><a href="#3-网络与进程相关命令-1" class="headerlink" title="3. 网络与进程相关命令"></a>3. 网络与进程相关命令</h4>
       
     </div>
     
@@ -583,7 +619,7 @@ grep的使用基础是正则表达式，学习这个命令最好的办法是创�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux命令大全"><span class="nav-number">1.</span> <span class="nav-text">Linux命令大全</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.1.</span> <span class="nav-text"># 目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-系统资源查看命令"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-文件与进程相关命令"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-网络与进程相关命令"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 网络与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-磁盘相关命令"><span class="nav-number">1.1.4.</span> <span class="nav-text">4. 磁盘相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-压缩、ACL控制等工具命令"><span class="nav-number">1.1.5.</span> <span class="nav-text">5. 压缩、ACL控制等工具命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-系统资源查看命令-1"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-文件与进程相关命令-1"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux命令大全"><span class="nav-number">1.</span> <span class="nav-text">Linux命令大全</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录"><span class="nav-number">1.1.</span> <span class="nav-text"># 目录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-系统资源查看命令"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-文件与进程相关命令"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-网络与进程相关命令"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 网络与进程相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-磁盘相关命令"><span class="nav-number">1.1.4.</span> <span class="nav-text">4. 磁盘相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-压缩、ACL控制等工具命令"><span class="nav-number">1.1.5.</span> <span class="nav-text">5. 压缩、ACL控制等工具命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-系统资源查看命令-1"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">1. 系统资源查看命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-文件与进程相关命令-1"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2. 文件与进程相关命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-网络与进程相关命令-1"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">3. 网络与进程相关命令</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
